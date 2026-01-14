@@ -1,6 +1,6 @@
 ---
 name: Extract epics
-description: Extract 6–12 epics (depending on complexity) for an idea using concept_summary.md as the semantic anchor (writes to ideas/<IDEA_ID>/runs and updates ideas/<IDEA_ID>/latest)
+description: Extract 2–12 epics (depending on complexity) for an idea using concept_summary.md as the semantic anchor (writes to ideas/<IDEA_ID>/runs and updates ideas/<IDEA_ID>/latest)
 argument-hint: "<IDEA_ID>   (example: IDEA-0003_my-idea)"
 disable-model-invocation: true
 ---
@@ -179,7 +179,7 @@ Epics describe **what outcome exists when the epic is done**, not how it is impl
 
 ### You MUST
 
-- Produce **1–12 epics**, based on idea complexity, that collectively cover the system described in `concept_summary.md`.
+- Produce **2–12 epics**, based on idea complexity, that collectively cover the system described in `concept_summary.md`.
 - Keep epics **distinct** and **minimally overlapping**.
 - Use **Invariants**, **Constraints**, and **Exclusions** from `concept_summary.md` as hard guardrails.
 - Assign each epic:

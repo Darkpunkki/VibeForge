@@ -245,7 +245,7 @@ A feature:
 
 - Too broad → split by responsibility/workflow step.
 - Too similar → merge or adjust scope to remove overlap.
-- Typical target: 4–10 features per epic (unless `feature_config.md` says otherwise).
+- Typical target: 2–10 features per epic, depending on complexity (unless `feature_config.md` says otherwise).
 
 7. Sanity check coverage
 
