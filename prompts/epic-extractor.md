@@ -168,7 +168,7 @@ Epics describe **what outcome exists when the epic is done**, not how it is impl
 
 ### You MUST
 
-- Produce **6–12 epics** that collectively cover the system described in `concept_summary.md`.
+- Produce **1–12 epics**, based on idea complexity, that collectively cover the system described in `concept_summary.md`.
 - Keep epics **distinct** and **minimally overlapping**.
 - Use **Invariants**, **Constraints**, and **Exclusions** from `concept_summary.md` as hard guardrails.
 - Assign each epic:
@@ -272,7 +272,7 @@ epics:
 
 Constraints:
 
-- 6–12 epics
+- 1–12 epics
 - IDs stable and sequential: `EPIC-001`, `EPIC-002`, ...
 - If dependencies are unknown, omit them or use an empty list
 
@@ -386,3 +386,7 @@ If boundaries are unclear:
 - Prefer conservative epic separation to avoid overlap.
 - Record uncertainty as warnings in `run_log.md`.
 - Do not guess major new capabilities.
+
+
+## When finished
+- Recommend the user review the epics with the epic-validator prompt
