@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "vf-framework-mcp": {
+      "command": "npx",
+      "args": ["-y", "tsx", "src/index.ts"],
+      "cwd": "C:/path/to/your/project/repo"
+    }
+  }
+}

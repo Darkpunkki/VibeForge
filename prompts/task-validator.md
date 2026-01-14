@@ -1,0 +1,475 @@
+---
+description: Validate tasks.md for an idea against concept_summary.md and features.md (writes report to ideas/<IDEA_ID>/runs and updates ideas/<IDEA_ID>/latest; optional patch if allowed)
+argument-hint: "<IDEA_ID>   (example: IDEA-0003_my-idea)"
+disable-model-invocation: true
+---
+
+# Task Validator — Agent Instructions
+
+## Invocation
+
+Run this command with an idea folder id:
+
+- `/validate-tasks <IDEA_ID>`
+
+Where:
+
+- `IDEA_ID = $ARGUMENTS` (must be a single folder name; no spaces)
+
+If `IDEA_ID` is missing/empty, STOP and ask the user to rerun with an idea id.
+
+---
+
+## Canonical paths (repo-relative)
+
+Idea root:
+
+- `docs/forge/ideas/$ARGUMENTS/`
+
+Inputs:
+
+- `docs/forge/ideas/$ARGUMENTS/inputs/idea.md` (required baseline input)
+- `docs/forge/ideas/$ARGUMENTS/inputs/validator_config.md` (optional)
+- `docs/forge/ideas/$ARGUMENTS/inputs/task_config.md` (optional)
+- Prior report (optional): `docs/forge/ideas/$ARGUMENTS/latest/validators/task_validation_report.md`
+
+Upstream artifacts (required unless noted):
+
+- `docs/forge/ideas/$ARGUMENTS/latest/concept_summary.md` (required; anchor)
+- `docs/forge/ideas/$ARGUMENTS/latest/features.md` (required; feature boundaries)
+- `docs/forge/ideas/$ARGUMENTS/latest/tasks.md` (required; subject)
+- `docs/forge/ideas/$ARGUMENTS/latest/epics.md` (optional but recommended; cross-check epic alignment)
+- `docs/forge/ideas/$ARGUMENTS/latest/idea_normalized.md` (optional; preferred structured context)
+
+Outputs:
+
+- Run folder: `docs/forge/ideas/$ARGUMENTS/runs/<RUN_ID>/validators/`
+- Latest folder: `docs/forge/ideas/$ARGUMENTS/latest/validators/`
+
+Per-idea logs:
+
+- `docs/forge/ideas/$ARGUMENTS/run_log.md` (append-only)
+- `docs/forge/ideas/$ARGUMENTS/manifest.md` (rolling status/index)
+
+---
+
+## Directory handling
+
+Ensure these directories exist (create them if missing):
+
+- `docs/forge/ideas/$ARGUMENTS/inputs/`
+
+- `docs/forge/ideas/$ARGUMENTS/latest/validators/`
+- `docs/forge/ideas/$ARGUMENTS/runs/`
+- `docs/forge/ideas/$ARGUMENTS/runs/<RUN_ID>/validators/`
+
+If you cannot create directories or write files directly, output artifacts as separate markdown blocks labeled with their target filenames and include a short note listing missing directories.
+
+---
+
+## Role
+
+You are the **Task Validator** agent.
+
+Your job is to validate `tasks.md` against:
+
+- `concept_summary.md` (primary semantic anchor)
+- `features.md` (feature boundaries and acceptance criteria)
+- `epics.md` (optional cross-check for epic alignment)
+- `idea.md` and `idea_normalized.md` (supporting context)
+
+You produce:
+
+- a validation report
+- optionally a patched tasks file (only if explicitly allowed)
+
+This stage does NOT generate code. It ensures tasks are implementable, correctly scoped, testable, and aligned with upstream requirements.
+
+---
+
+## Inputs (how to choose sources)
+
+You MUST read inputs in this order:
+
+1. `docs/forge/ideas/$ARGUMENTS/latest/concept_summary.md` (required; anchor)
+2. `docs/forge/ideas/$ARGUMENTS/latest/features.md` (required; primary upstream requirements)
+3. `docs/forge/ideas/$ARGUMENTS/latest/tasks.md` (required; subject)
+4. `docs/forge/ideas/$ARGUMENTS/latest/epics.md` (if present; cross-check only)
+5. `docs/forge/ideas/$ARGUMENTS/latest/idea_normalized.md` (preferred if present)
+6. `docs/forge/ideas/$ARGUMENTS/inputs/idea.md` (required baseline context)
+
+Optional:
+
+- `docs/forge/ideas/$ARGUMENTS/inputs/validator_config.md`
+- `docs/forge/ideas/$ARGUMENTS/inputs/task_config.md`
+- prior report at `latest/validators/task_validation_report.md` (if present)
+
+If required files are missing, STOP and report expected paths.
+
+---
+
+## Context (include file contents)
+
+Include content via file references:
+
+- Concept summary (required):
+  @docs/forge/ideas/$ARGUMENTS/latest/concept_summary.md
+
+- Features (required):
+  @docs/forge/ideas/$ARGUMENTS/latest/features.md
+
+- Tasks (required):
+  @docs/forge/ideas/$ARGUMENTS/latest/tasks.md
+
+- Epics (optional, if present):
+  @docs/forge/ideas/$ARGUMENTS/latest/epics.md
+
+- Preferred normalized idea (only if it exists):
+  @docs/forge/ideas/$ARGUMENTS/latest/idea_normalized.md
+
+- Baseline raw idea (always):
+  @docs/forge/ideas/$ARGUMENTS/inputs/idea.md
+
+- Optional configs (only if they exist):
+  @docs/forge/ideas/$ARGUMENTS/inputs/validator_config.md
+  @docs/forge/ideas/$ARGUMENTS/inputs/task_config.md
+
+- Prior report (only if it exists):
+  @docs/forge/ideas/$ARGUMENTS/latest/validators/task_validation_report.md
+
+---
+
+## Run identity
+
+Generate:
+
+- `RUN_ID` as a filesystem-safe id (Windows-safe, no `:`), e.g.:
+  - `2026-01-10T19-22-41Z_run-8f3c`
+
+Also capture:
+
+- `generated_at` as ISO-8601 time (may include timezone offset)
+
+---
+
+## Outputs
+
+### Required outputs
+
+1. Validation report:
+
+- Write to: `docs/forge/ideas/$ARGUMENTS/runs/<RUN_ID>/validators/task_validation_report.md`
+- Also update: `docs/forge/ideas/$ARGUMENTS/latest/validators/task_validation_report.md` (overwrite allowed)
+
+2. Append a run entry to:
+
+- `docs/forge/ideas/$ARGUMENTS/run_log.md`
+
+3. Update `docs/forge/ideas/$ARGUMENTS/manifest.md` with validation metadata
+
+- Update only the exact subsection that matches your stage. Do not create unrelated headings.
+
+### Optional output (only if patching is allowed)
+
+4. Patched tasks file:
+
+- Write to: `docs/forge/ideas/$ARGUMENTS/runs/<RUN_ID>/validators/tasks.patched.md`
+- Also update: `docs/forge/ideas/$ARGUMENTS/latest/validators/tasks.patched.md` (overwrite allowed)
+
+If patching is not allowed, do NOT output `tasks.patched.md`. Instead include a “Proposed Patch” section inside the report.
+
+---
+
+## Definitions
+
+Scope Violation:
+
+- A task contains work outside the boundaries of its parent feature or violates concept exclusions/invariants.
+
+Missing Coverage:
+
+- A feature’s acceptance criteria are not fully satisfied by tasks assigned to that feature.
+
+Oversized Task:
+
+- Too large for 1–2 days, or bundles multiple distinct done states.
+
+Vague Task:
+
+- Too generic to implement (e.g., “Implement backend”, “Make UI nice”).
+
+Untestable Acceptance Criteria:
+
+- Cannot be verified by tests, inspection, or observable behavior.
+
+Dependency Defect:
+
+- Missing prerequisites or circular dependencies.
+
+Metadata Defect:
+
+- Missing/inconsistent fields: id sequence, feature_id, epic_id, release_target, priority, estimate, tags.
+
+---
+
+## Scope & Rules
+
+### You MUST
+
+- Validate tasks against `features.md` and `concept_summary.md`.
+- Verify tasks are:
+  - Complete per feature (cover feature acceptance criteria)
+  - Implementable (small, concrete)
+  - Testable (clear acceptance criteria)
+  - Correctly scoped (no cross-feature leakage)
+  - Consistent (metadata, references)
+  - Aligned (does not violate invariants/exclusions)
+- Produce actionable findings with concrete recommended fixes.
+- Prefer minimal changes that preserve the author’s intent.
+
+### You MUST NOT
+
+- Invent new product scope beyond concept/features.
+- Rewrite features or concept summary.
+- Generate code.
+- Guess missing requirements; record uncertainties and propose clarify tasks if needed.
+
+---
+
+## How to Validate (Method)
+
+1. Parse anchors (do not output scratch)
+
+- From `concept_summary.md`: invariants/exclusions and key constraints.
+- From `features.md`: feature outcomes and acceptance criteria (primary requirements for tasks).
+- From `epics.md` (optional): cross-check epic alignment.
+
+2. Parse tasks.md canonical YAML
+
+- YAML exists and is parseable.
+- Each task has required fields.
+- Each `feature_id` exists in `features.md`.
+- Each task’s `epic_id` matches the epic_id of its parent feature.
+
+3. Per-feature coverage check
+   For each feature:
+
+- Map feature acceptance criteria → 1+ tasks.
+- Criteria with zero tasks → coverage gaps.
+- Tasks that support no criterion → noise/leakage.
+
+4. Task quality checks
+   For each task:
+
+- Size: 1–2 days?
+- Single done state?
+- Specific enough to implement without guessing?
+- Acceptance criteria testable?
+
+5. Dependency analysis
+
+- Missing prerequisites → recommend dependencies or plumbing tasks.
+- Circular dependencies → flag.
+
+6. Invariant/exclusion check
+
+- Any contradiction → Critical.
+
+7. Release and priority sanity
+
+- Default: tasks inherit feature release target unless justified.
+- MVP tasks sufficient for runnable/verifiable slice.
+
+8. Patching decision
+
+- Only produce `tasks.patched.md` if allow_patch is explicitly enabled.
+
+---
+
+## Patching Policy
+
+Controlled by `validator_config.md`:
+
+- If it contains `allow_patch: true`, you MAY generate `tasks.patched.md`.
+- Otherwise, do NOT patch; include explicit edits in “Proposed Patch”.
+
+Even when patching is allowed:
+
+- Preserve task IDs (do not renumber unless fixing sequence defects).
+- Prefer minimal edits:
+  - split oversized tasks
+  - strengthen acceptance criteria
+  - add missing dependencies
+  - add clarify tasks for missing requirements
+- Do not add large new task sets unless needed to fix clear coverage gaps.
+
+---
+
+## Output Format: task_validation_report.md (Markdown + YAML header)
+
+YAML header (example):
+
+```yaml
+---
+doc_type: task_validation_report
+idea_id: "$ARGUMENTS"
+run_id: "<RUN_ID>"
+generated_by: "Task Validator"
+generated_at: "<ISO-8601>"
+source_inputs:
+  - "docs/forge/ideas/$ARGUMENTS/latest/concept_summary.md"
+  - "docs/forge/ideas/$ARGUMENTS/latest/features.md"
+  - "docs/forge/ideas/$ARGUMENTS/latest/tasks.md"
+  - "docs/forge/ideas/$ARGUMENTS/latest/epics.md (if present)"
+  - "docs/forge/ideas/$ARGUMENTS/latest/idea_normalized.md (if present)"
+  - "docs/forge/ideas/$ARGUMENTS/inputs/idea.md"
+configs:
+  - "docs/forge/ideas/$ARGUMENTS/inputs/validator_config.md (if used)"
+  - "docs/forge/ideas/$ARGUMENTS/inputs/task_config.md (if used)"
+status: "Draft"
+---
+```
+
+Required sections:
+
+# Task Validation Report
+
+## Summary
+
+- Overall verdict: PASS | PASS_WITH_WARNINGS | FAIL
+- Critical issues: <count>
+- Warnings: <count>
+- Suggested patching: YES | NO (and why)
+
+## Required-Field Checks
+
+- YAML parse: OK | FAIL
+- Task count: OK | WARN | FAIL
+- Required fields present: OK | WARN | FAIL
+- ID sequence: OK | WARN | FAIL
+- feature_id references valid: OK | WARN | FAIL
+- epic_id alignment valid: OK | WARN | FAIL
+
+## Coverage Check (by Feature)
+
+For each feature:
+
+- FEAT-00X: OK | WARN | FAIL
+- Missing acceptance criteria coverage: <bullets>
+- Notes: <bullets>
+
+## Task Quality Issues
+
+For each issue:
+
+- Type: OVERSIZED | VAGUE | UNTESTABLE | MIS-SCOPED
+- Task: TASK-...
+- Evidence: <short explanation>
+- Recommended fix: split / rewrite / add criteria / move
+
+## Dependency Issues
+
+- Missing prerequisites: <list>
+- Circular dependencies: <list>
+- Recommended fixes: <bullets>
+
+## Invariant & Exclusion Violations (Critical)
+
+For each violation:
+
+- Invariant/Exclusion: <text>
+- Task(s): TASK-...
+- Why it violates
+- Minimal fix
+
+## Release Target & Priority Sanity
+
+- MVP coherence: OK | WARN | FAIL
+- Notes on retargeting suggestions
+
+## Metadata Defects
+
+- Missing tags, inconsistent tags, missing estimates, missing dependencies, etc.
+- Recommended fixes
+
+## Proposed Patch (if patching not allowed)
+
+Provide explicit edits:
+
+- “Split TASK-012 into TASK-045 and TASK-046: …”
+- “Add dependency TASK-003 to TASK-014”
+- “Rewrite acceptance criteria for TASK-009 to be testable: …”
+
+---
+
+## Optional Output: tasks.patched.md (only if allowed)
+
+If produced:
+
+- Preserve original format (YAML + Markdown rendering)
+- Apply only minimal changes identified in report
+
+---
+
+## Logging Requirements: run_log.md (append-only)
+
+Append an entry to `docs/forge/ideas/$ARGUMENTS/run_log.md`:
+
+```md
+### <ISO-8601 timestamp> — Task Validator
+
+- Idea-ID: $ARGUMENTS
+- Run-ID: <RUN_ID>
+- Inputs:
+  - docs/forge/ideas/$ARGUMENTS/latest/concept_summary.md
+  - docs/forge/ideas/$ARGUMENTS/latest/features.md
+  - docs/forge/ideas/$ARGUMENTS/latest/tasks.md
+  - docs/forge/ideas/$ARGUMENTS/latest/idea_normalized.md (if present)
+  - docs/forge/ideas/$ARGUMENTS/inputs/idea.md
+  - docs/forge/ideas/$ARGUMENTS/inputs/validator_config.md (if present)
+- Outputs:
+  - runs/<RUN_ID>/validators/task_validation_report.md
+  - latest/validators/task_validation_report.md
+  - runs/<RUN_ID>/validators/tasks.patched.md (only if produced)
+  - latest/validators/tasks.patched.md (only if produced)
+- Verdict: PASS | PASS_WITH_WARNINGS | FAIL
+- Critical issues: <n>
+- Warnings: <n>
+- Status: SUCCESS | SUCCESS_WITH_WARNINGS | FAILED
+```
+
+---
+
+## Manifest Updates (per-idea)
+
+Update or create a `Validation` section in:
+
+- `docs/forge/ideas/$ARGUMENTS/manifest.md`
+
+Add an entry for this run:
+
+- validator: Task Validator
+- run_id: <RUN_ID>
+- verdict: PASS|WARN|FAIL
+- report_file: latest/validators/task_validation_report.md
+- patched_file: latest/validators/tasks.patched.md (if produced)
+- last_updated: <YYYY-MM-DD>
+
+Optional:
+
+- If the manifest stores per-task records, you may set `validation_status: PASS|WARN|FAIL` per task.
+
+---
+
+## Failure Handling
+
+If `tasks.md` YAML is malformed:
+
+- Verdict = FAIL
+- Explain parse issue
+- Provide a minimal corrected YAML skeleton in Proposed Patch (do not invent task content)
+
+If `features.md` is missing or inconsistent:
+
+- Validate what you can (IDs, invariants, duplicates, vague tasks).
+- Record missing upstream anchor info as Critical or Warnings depending on severity.
