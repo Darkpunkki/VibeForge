@@ -15,9 +15,19 @@ Run this command with an idea folder id:
 
 Where:
 
-- `IDEA_ID = $ARGUMENTS` (must be a single folder name; no spaces)
+- `IDEA_REF = $ARGUMENTS` (must be a single token; no spaces)
 
-If `IDEA_ID` is missing/empty, STOP and ask the user to rerun with an idea id.
+If `IDEA_REF` is missing/empty, STOP and ask the user to rerun with an idea id.
+
+---
+
+## Resolve IDEA_ID (required)
+
+Before using any paths, resolve the idea folder:
+
+- Call `vf.resolve_idea_id` with `idea_ref = $ARGUMENTS`
+- Store the returned `idea_id` as `IDEA_ID`
+- Use `IDEA_ID` for all paths, YAML headers, and run log entries
 
 ---
 
@@ -25,31 +35,31 @@ If `IDEA_ID` is missing/empty, STOP and ask the user to rerun with an idea id.
 
 Idea root:
 
-- `docs/forge/ideas/$ARGUMENTS/`
+- `docs/forge/ideas/<IDEA_ID>/`
 
 Inputs:
 
-- `docs/forge/ideas/$ARGUMENTS/inputs/idea.md` (required baseline input)
-- `docs/forge/ideas/$ARGUMENTS/inputs/validator_config.md` (optional)
-- `docs/forge/ideas/$ARGUMENTS/inputs/feature_config.md` (optional)
-- Prior report (optional): `docs/forge/ideas/$ARGUMENTS/latest/validators/feature_validation_report.md`
+- `docs/forge/ideas/<IDEA_ID>/inputs/idea.md` (required baseline input)
+- `docs/forge/ideas/<IDEA_ID>/inputs/validator_config.md` (optional)
+- `docs/forge/ideas/<IDEA_ID>/inputs/feature_config.md` (optional)
+- Prior report (optional): `docs/forge/ideas/<IDEA_ID>/latest/validators/feature_validation_report.md`
 
 Upstream artifacts (required unless noted):
 
-- `docs/forge/ideas/$ARGUMENTS/latest/concept_summary.md` (required; anchor)
-- `docs/forge/ideas/$ARGUMENTS/latest/epics.md` (required; boundaries)
-- `docs/forge/ideas/$ARGUMENTS/latest/features.md` (required; subject)
-- `docs/forge/ideas/$ARGUMENTS/latest/idea_normalized.md` (optional; preferred structured context)
+- `docs/forge/ideas/<IDEA_ID>/latest/concept_summary.md` (required; anchor)
+- `docs/forge/ideas/<IDEA_ID>/latest/epics.md` (required; boundaries)
+- `docs/forge/ideas/<IDEA_ID>/latest/features.md` (required; subject)
+- `docs/forge/ideas/<IDEA_ID>/latest/idea_normalized.md` (optional; preferred structured context)
 
 Outputs:
 
-- Run folder: `docs/forge/ideas/$ARGUMENTS/runs/<RUN_ID>/validators/`
-- Latest folder: `docs/forge/ideas/$ARGUMENTS/latest/validators/`
+- Run folder: `docs/forge/ideas/<IDEA_ID>/runs/<RUN_ID>/validators/`
+- Latest folder: `docs/forge/ideas/<IDEA_ID>/latest/validators/`
 
 Per-idea logs:
 
-- `docs/forge/ideas/$ARGUMENTS/run_log.md` (append-only)
-- `docs/forge/ideas/$ARGUMENTS/manifest.md` (rolling status/index)
+- `docs/forge/ideas/<IDEA_ID>/run_log.md` (append-only)
+- `docs/forge/ideas/<IDEA_ID>/manifest.md` (rolling status/index)
 
 ---
 
@@ -57,10 +67,10 @@ Per-idea logs:
 
 Ensure these directories exist (create them if missing):
 
-- `docs/forge/ideas/$ARGUMENTS/inputs/`
-- `docs/forge/ideas/$ARGUMENTS/latest/validators/`
-- `docs/forge/ideas/$ARGUMENTS/runs/`
-- `docs/forge/ideas/$ARGUMENTS/runs/<RUN_ID>/validators/`
+- `docs/forge/ideas/<IDEA_ID>/inputs/`
+- `docs/forge/ideas/<IDEA_ID>/latest/validators/`
+- `docs/forge/ideas/<IDEA_ID>/runs/`
+- `docs/forge/ideas/<IDEA_ID>/runs/<RUN_ID>/validators/`
 
 If you cannot create directories or write files directly, output artifacts as separate markdown blocks labeled with their target filenames and include a short note listing missing directories.
 
@@ -89,16 +99,16 @@ This stage does NOT create new scope. It detects and repairs structure issues su
 
 You MUST read inputs in this order:
 
-1. `docs/forge/ideas/$ARGUMENTS/latest/concept_summary.md` (required; anchor)
-2. `docs/forge/ideas/$ARGUMENTS/latest/epics.md` (required; epic boundaries)
-3. `docs/forge/ideas/$ARGUMENTS/latest/features.md` (required; subject)
-4. `docs/forge/ideas/$ARGUMENTS/latest/idea_normalized.md` (preferred if present)
-5. `docs/forge/ideas/$ARGUMENTS/inputs/idea.md` (required baseline context)
+1. `docs/forge/ideas/<IDEA_ID>/latest/concept_summary.md` (required; anchor)
+2. `docs/forge/ideas/<IDEA_ID>/latest/epics.md` (required; epic boundaries)
+3. `docs/forge/ideas/<IDEA_ID>/latest/features.md` (required; subject)
+4. `docs/forge/ideas/<IDEA_ID>/latest/idea_normalized.md` (preferred if present)
+5. `docs/forge/ideas/<IDEA_ID>/inputs/idea.md` (required baseline context)
 
 Optional:
 
-- `docs/forge/ideas/$ARGUMENTS/inputs/validator_config.md`
-- `docs/forge/ideas/$ARGUMENTS/inputs/feature_config.md`
+- `docs/forge/ideas/<IDEA_ID>/inputs/validator_config.md`
+- `docs/forge/ideas/<IDEA_ID>/inputs/feature_config.md`
 - prior report at `latest/validators/feature_validation_report.md` (if present)
 
 If required files are missing, STOP and report expected paths.
@@ -110,26 +120,26 @@ If required files are missing, STOP and report expected paths.
 Include content via file references:
 
 - Concept summary (required):
-  @docs/forge/ideas/$ARGUMENTS/latest/concept_summary.md
+  @docs/forge/ideas/<IDEA_ID>/latest/concept_summary.md
 
 - Epics (required):
-  @docs/forge/ideas/$ARGUMENTS/latest/epics.md
+  @docs/forge/ideas/<IDEA_ID>/latest/epics.md
 
 - Features (required):
-  @docs/forge/ideas/$ARGUMENTS/latest/features.md
+  @docs/forge/ideas/<IDEA_ID>/latest/features.md
 
 - Preferred normalized idea (only if it exists):
-  @docs/forge/ideas/$ARGUMENTS/latest/idea_normalized.md
+  @docs/forge/ideas/<IDEA_ID>/latest/idea_normalized.md
 
 - Baseline raw idea (always):
-  @docs/forge/ideas/$ARGUMENTS/inputs/idea.md
+  @docs/forge/ideas/<IDEA_ID>/inputs/idea.md
 
 - Optional configs (only if they exist):
-  @docs/forge/ideas/$ARGUMENTS/inputs/validator_config.md
-  @docs/forge/ideas/$ARGUMENTS/inputs/feature_config.md
+  @docs/forge/ideas/<IDEA_ID>/inputs/validator_config.md
+  @docs/forge/ideas/<IDEA_ID>/inputs/feature_config.md
 
 - Prior report (only if it exists):
-  @docs/forge/ideas/$ARGUMENTS/latest/validators/feature_validation_report.md
+  @docs/forge/ideas/<IDEA_ID>/latest/validators/feature_validation_report.md
 
 ---
 
@@ -152,14 +162,14 @@ Also capture:
 
 1. Validation report:
 
-- Write to: `docs/forge/ideas/$ARGUMENTS/runs/<RUN_ID>/validators/feature_validation_report.md`
-- Also update: `docs/forge/ideas/$ARGUMENTS/latest/validators/feature_validation_report.md` (overwrite allowed)
+- Write to: `docs/forge/ideas/<IDEA_ID>/runs/<RUN_ID>/validators/feature_validation_report.md`
+- Also update: `docs/forge/ideas/<IDEA_ID>/latest/validators/feature_validation_report.md` (overwrite allowed)
 
 2. Append a run entry to:
 
-- `docs/forge/ideas/$ARGUMENTS/run_log.md`
+- `docs/forge/ideas/<IDEA_ID>/run_log.md`
 
-3. Update `docs/forge/ideas/$ARGUMENTS/manifest.md` with validation metadata
+3. Update `docs/forge/ideas/<IDEA_ID>/manifest.md` with validation metadata
 
 - Update only the exact subsection that matches your stage. Do not create unrelated headings.
 
@@ -167,8 +177,8 @@ Also capture:
 
 4. Patched features file:
 
-- Write to: `docs/forge/ideas/$ARGUMENTS/runs/<RUN_ID>/validators/features.patched.md`
-- Also update: `docs/forge/ideas/$ARGUMENTS/latest/validators/features.patched.md` (overwrite allowed)
+- Write to: `docs/forge/ideas/<IDEA_ID>/runs/<RUN_ID>/validators/features.patched.md`
+- Also update: `docs/forge/ideas/<IDEA_ID>/latest/validators/features.patched.md` (overwrite allowed)
 
 If patching is not allowed, do NOT output `features.patched.md`. Instead include a “Proposed Patch” section inside the report.
 
@@ -292,19 +302,19 @@ YAML header (example):
 ```yaml
 ---
 doc_type: feature_validation_report
-idea_id: "$ARGUMENTS"
+idea_id: "<IDEA_ID>"
 run_id: "<RUN_ID>"
 generated_by: "Feature Validator"
 generated_at: "<ISO-8601>"
 source_inputs:
-  - "docs/forge/ideas/$ARGUMENTS/latest/concept_summary.md"
-  - "docs/forge/ideas/$ARGUMENTS/latest/epics.md"
-  - "docs/forge/ideas/$ARGUMENTS/latest/features.md"
-  - "docs/forge/ideas/$ARGUMENTS/latest/idea_normalized.md (if present)"
-  - "docs/forge/ideas/$ARGUMENTS/inputs/idea.md"
+  - "docs/forge/ideas/<IDEA_ID>/latest/concept_summary.md"
+  - "docs/forge/ideas/<IDEA_ID>/latest/epics.md"
+  - "docs/forge/ideas/<IDEA_ID>/latest/features.md"
+  - "docs/forge/ideas/<IDEA_ID>/latest/idea_normalized.md (if present)"
+  - "docs/forge/ideas/<IDEA_ID>/inputs/idea.md"
 configs:
-  - "docs/forge/ideas/$ARGUMENTS/inputs/validator_config.md (if used)"
-  - "docs/forge/ideas/$ARGUMENTS/inputs/feature_config.md (if used)"
+  - "docs/forge/ideas/<IDEA_ID>/inputs/validator_config.md (if used)"
+  - "docs/forge/ideas/<IDEA_ID>/inputs/feature_config.md (if used)"
 status: "Draft"
 ---
 ```
@@ -400,20 +410,20 @@ If produced:
 
 ## Logging Requirements: run_log.md (append-only)
 
-Append an entry to `docs/forge/ideas/$ARGUMENTS/run_log.md`:
+Append an entry to `docs/forge/ideas/<IDEA_ID>/run_log.md`:
 
 ```md
 ### <ISO-8601 timestamp> — Feature Validator
 
-- Idea-ID: $ARGUMENTS
+- Idea-ID: <IDEA_ID>
 - Run-ID: <RUN_ID>
 - Inputs:
-  - docs/forge/ideas/$ARGUMENTS/latest/concept_summary.md
-  - docs/forge/ideas/$ARGUMENTS/latest/epics.md
-  - docs/forge/ideas/$ARGUMENTS/latest/features.md
-  - docs/forge/ideas/$ARGUMENTS/latest/idea_normalized.md (if present)
-  - docs/forge/ideas/$ARGUMENTS/inputs/idea.md
-  - docs/forge/ideas/$ARGUMENTS/inputs/validator_config.md (if present)
+  - docs/forge/ideas/<IDEA_ID>/latest/concept_summary.md
+  - docs/forge/ideas/<IDEA_ID>/latest/epics.md
+  - docs/forge/ideas/<IDEA_ID>/latest/features.md
+  - docs/forge/ideas/<IDEA_ID>/latest/idea_normalized.md (if present)
+  - docs/forge/ideas/<IDEA_ID>/inputs/idea.md
+  - docs/forge/ideas/<IDEA_ID>/inputs/validator_config.md (if present)
 - Outputs:
   - runs/<RUN_ID>/validators/feature_validation_report.md
   - latest/validators/feature_validation_report.md
@@ -431,7 +441,7 @@ Append an entry to `docs/forge/ideas/$ARGUMENTS/run_log.md`:
 
 Update or create a `Validation` section in:
 
-- `docs/forge/ideas/$ARGUMENTS/manifest.md`
+- `docs/forge/ideas/<IDEA_ID>/manifest.md`
 
 Add an entry for this run:
 

@@ -36,14 +36,24 @@ Examples:
 
 Argument parsing rules (best-effort):
 
-- `$1` = IDEA_ID (required)
+- `$1` = IDEA_REF (required)
 - Remaining tokens in `$ARGUMENTS` may include:
   - a count `N` (integer)
   - a release filter `MVP|V1|Full|Later`
   - `EPIC-###` and/or `FEAT-###` filters
   - a forced starting id `WP-####`
 
-If IDEA_ID is missing, STOP and ask the user to provide it.
+If IDEA_REF is missing, STOP and ask the user to provide it.
+
+---
+
+## Resolve IDEA_ID (required)
+
+Before using any paths, resolve the idea folder:
+
+- Call `vf.resolve_idea_id` with `idea_ref = $1`
+- Store the returned `idea_id` as `IDEA_ID`
+- Use `IDEA_ID` for all paths, YAML headers, and run log entries
 
 ---
 
@@ -51,19 +61,19 @@ If IDEA_ID is missing, STOP and ask the user to provide it.
 
 Per-idea WP board (target):
 
-- `docs/forge/ideas/$1/latest/work_packages.md` (create if missing)
+- `docs/forge/ideas/<IDEA_ID>/latest/work_packages.md` (create if missing)
 
 Idea backlog (canonical):
 
-- `docs/forge/ideas/$1/latest/tasks.md` (required)
+- `docs/forge/ideas/<IDEA_ID>/latest/tasks.md` (required)
 
 ## Optional Inputs (Auto if present)
 
 For better titles/context (do not derive tasks from these):
 
-- `docs/forge/ideas/$1/latest/features.md`
-- `docs/forge/ideas/$1/latest/epics.md`
-- `docs/forge/ideas/$1/latest/concept_summary.md`
+- `docs/forge/ideas/<IDEA_ID>/latest/features.md`
+- `docs/forge/ideas/<IDEA_ID>/latest/epics.md`
+- `docs/forge/ideas/<IDEA_ID>/latest/concept_summary.md`
 
 ---
 
@@ -71,7 +81,7 @@ For better titles/context (do not derive tasks from these):
 
 Append WP entries into:
 
-- `docs/forge/ideas/$1/latest/work_packages.md`
+- `docs/forge/ideas/<IDEA_ID>/latest/work_packages.md`
 
 No other files are modified by this command.
 
@@ -81,7 +91,7 @@ If you cannot write to the file directly, output the exact text block(s) that sh
 
 ## Step 0 — Read context and compute queue state
 
-1) Open `docs/forge/ideas/$1/latest/work_packages.md` and parse existing WPs:
+1) Open `docs/forge/ideas/<IDEA_ID>/latest/work_packages.md` and parse existing WPs:
 
 - WP ids
 - Status (`Queued`, `In Progress`, `Blocked`, `Done`, etc.)
@@ -91,7 +101,7 @@ If you cannot write to the file directly, output the exact text block(s) that sh
 If the file does not exist, treat as empty and create it with a minimal header:
 
 ```md
-# Work Packages — $1
+# Work Packages — <IDEA_ID>
 
 (append new WPs below)
 ```
@@ -110,7 +120,7 @@ If the file does not exist, treat as empty and create it with a minimal header:
 
 ## Step 1 — Read and index the backlog (tasks.md)
 
-1) Open `docs/forge/ideas/$1/latest/tasks.md`.
+1) Open `docs/forge/ideas/<IDEA_ID>/latest/tasks.md`.
 2) Parse the canonical YAML block at the top (preferred). If missing, fall back to parsing the Markdown rendering.
 3) Build an in-memory list of tasks with fields (best-effort):
 
@@ -205,7 +215,7 @@ For each WP batch selected:
 
 4) Plan Doc path (reference only; created later by a planning command):
 
-- `docs/forge/ideas/$1/planning/WPP-0001-WP-XXXX_TASK-AAA-BBB_<short_slug>.md`
+- `docs/forge/ideas/<IDEA_ID>/planning/WPP-0001-WP-XXXX_TASK-AAA-BBB_<short_slug>.md`
   - `WPP-0001` is an incrementing plan-doc id local to the idea (best-effort).
   - `TASK-AAA-BBB` = numeric range (min/max) of included tasks
   - Slug: short + stable (e.g., `orchestration_api_slice`, `ui_control_panel_basics`)
@@ -227,7 +237,7 @@ For each WP batch selected:
 
 8) Traceability:
 
-- Include `Idea-ID: $1` in the WP entry so WPs are traceable back to the idea.
+- Include `Idea-ID: <IDEA_ID>` in the WP entry so WPs are traceable back to the idea.
 
 ---
 
@@ -241,14 +251,14 @@ Recommended WP entry format:
 ## WP-XXXX — <Title>
 
 - Status: Queued
-- Idea-ID: $1
+- Idea-ID: <IDEA_ID>
 - Release: MVP|V1|Full|Later
 - Tasks:
   - TASK-001 — <title>
   - TASK-002 — <title>
 - Goal: <goal sentence>
 - Dependencies: None | WP-XXXX | TASK-YYY
-- Plan Doc: docs/forge/ideas/$1/planning/WPP-0001-WP-XXXX_TASK-AAA-BBB_<slug>.md
+- Plan Doc: docs/forge/ideas/<IDEA_ID>/planning/WPP-0001-WP-XXXX_TASK-AAA-BBB_<slug>.md
 - Verify: pytest (and any extras)
 ```
 
@@ -266,7 +276,7 @@ Print:
 
 ## Non-negotiable Rules
 
-- Never modify or rewrite the canonical backlog in `docs/forge/ideas/$1/latest/tasks.md`.
+- Never modify or rewrite the canonical backlog in `docs/forge/ideas/<IDEA_ID>/latest/tasks.md`.
 - Never enqueue tasks already referenced by any existing WP (any status).
 - Keep WPs small and focused; default to 1 WP if no count is provided.
 - Do NOT mark tasks complete here.

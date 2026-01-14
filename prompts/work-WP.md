@@ -23,6 +23,16 @@ Use `$ARGUMENTS` for the optional IDEA_ID and/or WP id.
 
 ---
 
+## Resolve IDEA_ID (required)
+
+Before using any idea-scoped paths:
+
+- If `$ARGUMENTS` starts with `IDEA-`, treat the first token as `IDEA_REF`.
+- Call `vf.resolve_idea_id` with `idea_ref = IDEA_REF` and store `IDEA_ID`.
+- Use `IDEA_ID` for all paths, YAML headers, and run log entries.
+
+---
+
 ## Inputs (Auto)
 
 ### Canonical sources of truth (idea-scoped)
@@ -67,8 +77,9 @@ Use `$ARGUMENTS` for the optional IDEA_ID and/or WP id.
 **Form A (recommended):** `$ARGUMENTS` starts with `IDEA-...`
 
 - Parse:
-  - `IDEA_ID = first token`
+  - `IDEA_REF = first token`
   - Optional `WP_ID = second token` if it matches `WP-####`
+  - Resolve `IDEA_ID` by calling `vf.resolve_idea_id` with `idea_ref = IDEA_REF`
 
 **Form B (best-effort):** `$ARGUMENTS` is only `WP-####`
 
