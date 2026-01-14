@@ -1,4 +1,5 @@
 ---
+name: Make WPs
 description: Queue next Work Package(s) from an idea’s backlog (tasks → work_packages.md), without modifying tasks.md
 argument-hint: "<IDEA_ID> [N|MVP|V1|Full|Later|EPIC-###|FEAT-###|WP-####] ...  (examples: IDEA-0003_my-idea 2 | IDEA-0003_my-idea MVP | IDEA-0003_my-idea EPIC-003)"
 disable-model-invocation: true

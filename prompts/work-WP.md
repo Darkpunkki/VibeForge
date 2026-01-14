@@ -1,4 +1,5 @@
 ---
+name: Execute WP
 description: Execute a Work Package (WP) from an idea’s latest/work_packages.md (auto-picks next Queued, or runs a specific WP id)
 argument-hint: "<IDEA_ID> [WP-####]   (examples: IDEA-0001-my-idea | IDEA-0001-my-idea WP-0002 | WP-0002)"
 disable-model-invocation: true

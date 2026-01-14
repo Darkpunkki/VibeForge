@@ -4,6 +4,7 @@ import { registerCreateIdeaFromText } from './vfCreateIdeaFromText.js';
 import { registerStartRun } from './vfStartRun.js';
 import { registerReadWrite } from './vfReadWrite.js';
 import { registerAppendLog } from './vfAppendLog.js';
+import { registerResolveIdeaId } from './vfResolveIdeaId.js';
 
 export function registerVfTools(server: McpServer) {
   registerEnsureIdeaWorkspace(server);
@@ -11,4 +12,5 @@ export function registerVfTools(server: McpServer) {
   registerStartRun(server);
   registerReadWrite(server);
   registerAppendLog(server);
+  registerResolveIdeaId(server);
 }

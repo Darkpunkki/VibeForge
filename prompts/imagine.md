@@ -1,4 +1,5 @@
 ---
+name: Imagine
 description: Imagine (Idea Intake) — Start or refine an idea. If given free-form text, create a new IDEA-XXXX folder, ask clarifying questions, draft idea.md, then (after user review) save to inputs/idea.md and log the run.
 argument-hint: >-
   <initial idea text OR existing IDEA_ID> (examples: build a docs-first backlog generator | IDEA-0007-my-idea)
