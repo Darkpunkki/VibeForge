@@ -45,12 +45,14 @@ Inputs:
 Optional upstream reference:
 
 - `docs/forge/ideas/<IDEA_ID>/latest/idea_normalized.md` (optional)
-- `docs/forge/ideas/<IDEA_ID>/latest/epics.md` (optional reference only; do not rewrite)
+- `docs/forge/ideas/<IDEA_ID>/latest/epics_backlog.md` (optional reference only; do not rewrite; fallback to epics.md if backlog missing)
+- `docs/forge/ideas/<IDEA_ID>/latest/epics.md` (fallback only if epics_backlog is missing)
 
 Required upstream artifacts:
 
 - `docs/forge/ideas/<IDEA_ID>/latest/concept_summary.md`
-- `docs/forge/ideas/<IDEA_ID>/latest/features.md`
+- `docs/forge/ideas/<IDEA_ID>/latest/features_backlog.md` (preferred)
+- `docs/forge/ideas/<IDEA_ID>/latest/features.md` (fallback only if features_backlog is missing)
 
 Outputs:
 
@@ -85,7 +87,7 @@ Your job is to expand a set of Features into concrete, implementable **Tasks** a
 You MUST treat `concept_summary.md` as the primary semantic anchor (read-only truth).
 You must also read:
 
-- `features.md` (authoritative feature boundaries, acceptance criteria, release targets)
+- `features_backlog.md` (authoritative feature boundaries, acceptance criteria, release targets; fallback to `features.md` only if backlog is missing)
 - the original idea documents (`idea.md` and/or `idea_normalized.md`) as required context to avoid losing important details
 
 This stage produces **no code**. It produces backlog tasks only.
@@ -97,19 +99,22 @@ This stage produces **no code**. It produces backlog tasks only.
 You MUST read inputs in this order:
 
 1. `docs/forge/ideas/<IDEA_ID>/latest/concept_summary.md` (required; primary anchor)
-2. `docs/forge/ideas/<IDEA_ID>/latest/features.md` (required; feature boundaries + acceptance criteria)
-3. `docs/forge/ideas/<IDEA_ID>/latest/idea_normalized.md` (preferred if present)
-4. `docs/forge/ideas/<IDEA_ID>/inputs/idea.md` (required baseline context)
+2. `docs/forge/ideas/<IDEA_ID>/latest/features_backlog.md` (preferred; feature boundaries + acceptance criteria)
+3. `docs/forge/ideas/<IDEA_ID>/latest/features.md` (fallback if features_backlog is missing)
+4. `docs/forge/ideas/<IDEA_ID>/latest/idea_normalized.md` (preferred if present)
+5. `docs/forge/ideas/<IDEA_ID>/inputs/idea.md` (required baseline context)
 
 Optional:
 
 - If `docs/forge/ideas/<IDEA_ID>/inputs/task_config.md` exists, apply it.
-- If `docs/forge/ideas/<IDEA_ID>/latest/epics.md` exists, you may use it only to cross-check epic boundaries and titles. Do not edit epics.
+- If `docs/forge/ideas/<IDEA_ID>/latest/epics_backlog.md` exists, you may use it only to cross-check epic boundaries and titles. Do not edit epics.
+- If `docs/forge/ideas/<IDEA_ID>/latest/epics_backlog.md` is missing but `docs/forge/ideas/<IDEA_ID>/latest/epics.md` exists, use `epics.md` only for cross-checking.
 
-If `latest/concept_summary.md` or `latest/features.md` is missing, STOP and report the expected path.
+If `latest/concept_summary.md` is missing, STOP and report the expected path.
+If `latest/features_backlog.md` is missing AND `latest/features.md` is missing, STOP and report the expected path.
 If `inputs/idea.md` is missing, STOP and report the expected path.
 
-If the idea docs contradict the concept summary/features, prefer `concept_summary.md` + `features.md` and record the conflict as a warning in `run_log.md`.
+If the idea docs contradict the concept summary/features, prefer `concept_summary.md` + `features_backlog.md` (or fallback `features.md`) and record the conflict as a warning in `run_log.md`.
 
 ---
 
@@ -120,10 +125,12 @@ Include the content via file references:
 - Concept summary (required):
   @docs/forge/ideas/<IDEA_ID>/latest/concept_summary.md
 
-- Features (required):
+- Features (preferred; fallback to features.md if backlog missing):
+  @docs/forge/ideas/<IDEA_ID>/latest/features_backlog.md
   @docs/forge/ideas/<IDEA_ID>/latest/features.md
 
 - Optional epics reference (only if it exists):
+  @docs/forge/ideas/<IDEA_ID>/latest/epics_backlog.md
   @docs/forge/ideas/<IDEA_ID>/latest/epics.md
 
 - Preferred normalized idea (only if it exists):
@@ -193,7 +200,7 @@ Tasks may be technical (routes, persistence, UI components) because this stage i
 
 ### You MUST
 
-- Produce tasks for every feature in `features.md`.
+- Produce tasks for every feature in `features_backlog.md` (or fallback `features.md`).
 - Keep tasks strictly within the scope of their parent feature (and indirectly within the epic).
 - Use the acceptance criteria of each feature to drive task decomposition.
 - Respect Invariants, Constraints, and Exclusions from `concept_summary.md`.
@@ -273,7 +280,8 @@ generated_by: "Task Builder"
 generated_at: "<ISO-8601>"
 source_inputs:
   - "docs/forge/ideas/<IDEA_ID>/latest/concept_summary.md"
-  - "docs/forge/ideas/<IDEA_ID>/latest/features.md"
+  - "docs/forge/ideas/<IDEA_ID>/latest/features_backlog.md"
+  - "docs/forge/ideas/<IDEA_ID>/latest/features.md (fallback if backlog missing)"
   - "docs/forge/ideas/<IDEA_ID>/latest/idea_normalized.md (if present)"
   - "docs/forge/ideas/<IDEA_ID>/inputs/idea.md"
 configs:
@@ -302,7 +310,7 @@ Constraints:
 
 - Every task includes: `id`, `feature_id`, `epic_id`, `title`, `description`, `acceptance_criteria`, `release_target`, `priority`, `estimate`, `tags`.
 - IDs stable and sequential: `TASK-001`, `TASK-002`, ...
-- `feature_id` must match a feature in `features.md`.
+- `feature_id` must match a feature in `features_backlog.md` (or fallback `features.md`).
 - `epic_id` must match the epic of the parent feature (as recorded in features).
 
 Markdown rendering (required):
@@ -341,7 +349,7 @@ Append an entry to `docs/forge/ideas/<IDEA_ID>/run_log.md`:
 - Run-ID: <RUN_ID>
 - Inputs:
   - docs/forge/ideas/<IDEA_ID>/latest/concept_summary.md
-  - docs/forge/ideas/<IDEA_ID>/latest/features.md
+  - docs/forge/ideas/<IDEA_ID>/latest/features_backlog.md (or fallback docs/forge/ideas/<IDEA_ID>/latest/features.md)
   - docs/forge/ideas/<IDEA_ID>/latest/idea_normalized.md (if present)
   - docs/forge/ideas/<IDEA_ID>/inputs/idea.md
   - docs/forge/ideas/<IDEA_ID>/inputs/task_config.md (if present)
@@ -393,7 +401,7 @@ If you detect a structural inconsistency in upstream docs, log a warning and pro
 
 ## Quality Check (internal)
 
-- Every feature in `features.md` has at least one task.
+- Every feature in `features_backlog.md` (or fallback `features.md`) has at least one task.
 - Tasks satisfy each feature’s acceptance criteria.
 - Tasks are small and specific; oversized tasks are split.
 - Acceptance criteria are concrete and testable.

@@ -67,6 +67,7 @@ Ensure these directories exist (create them if missing):
 - `docs/forge/ideas/<IDEA_ID>/latest/`
 - `docs/forge/ideas/<IDEA_ID>/runs/`
 - `docs/forge/ideas/<IDEA_ID>/runs/<RUN_ID>/`
+- `docs/forge/ideas/<IDEA_ID>/runs/<RUN_ID>/outputs/`
 
 If you cannot create directories or write files directly, output the artifacts as separate markdown blocks labeled with their target filenames and include a short note listing missing directories.
 
@@ -76,7 +77,7 @@ If you cannot create directories or write files directly, output the artifacts a
 
 You are the **Epic Extractor** agent.
 
-Your job is to generate a high-level backlog skeleton consisting of **Epics only** and write it to `epics.md`.
+Your job is to generate a high-level backlog skeleton consisting of **Epics only** and write it to `epics_backlog.md`.
 
 You MUST treat `concept_summary.md` as the **primary semantic anchor** (read-only truth).
 You must also read the original idea document (`idea.md` and/or `idea_normalized.md`) as required context to avoid losing important details.
@@ -139,13 +140,13 @@ Also capture:
 
 Write:
 
-1. `epics.md` to:
+1. `epics_backlog.md` to:
 
-- `docs/forge/ideas/<IDEA_ID>/runs/<RUN_ID>/epics.md`
+- `docs/forge/ideas/<IDEA_ID>/runs/<RUN_ID>/outputs/epics_backlog.md`
 
 Then also update:
 
-- `docs/forge/ideas/<IDEA_ID>/latest/epics.md` (overwrite allowed)
+- `docs/forge/ideas/<IDEA_ID>/latest/epics_backlog.md` (overwrite allowed)
 
 2. Append an entry to:
 
@@ -237,9 +238,9 @@ Epics describe **what outcome exists when the epic is done**, not how it is impl
 
 ---
 
-## Output Format: `epics.md` (YAML canonical block + Markdown rendering)
+## Output Format: `epics_backlog.md` (YAML canonical block + Markdown rendering)
 
-Write `epics.md` as:
+Write `epics_backlog.md` as:
 
 1) A YAML header + canonical epic list (machine-readable)
 2) A Markdown rendering (human-readable)
@@ -331,8 +332,8 @@ Append an entry to `docs/forge/ideas/<IDEA_ID>/run_log.md`:
   - docs/forge/ideas/<IDEA_ID>/inputs/idea.md
   - docs/forge/ideas/<IDEA_ID>/inputs/epic_config.md (if present)
 - Output:
-  - runs/<RUN_ID>/epics.md
-  - latest/epics.md
+  - runs/<RUN_ID>/outputs/epics_backlog.md
+  - latest/epics_backlog.md
 - Counts: <N epics>
 - Warnings:
   - <overlap risks, unclear boundaries, missing info, conflicts>

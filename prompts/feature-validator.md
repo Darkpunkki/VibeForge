@@ -1,6 +1,6 @@
 ---
 name: Validate features
-description: Validate features.md for an idea against concept_summary.md and epics.md (writes report to ideas/<IDEA_ID>/runs and updates ideas/<IDEA_ID>/latest; optional patch if allowed)
+description: Validate features_backlog.md for an idea against concept_summary.md and epics_backlog.md (writes report to ideas/<IDEA_ID>/runs and updates ideas/<IDEA_ID>/latest; optional patch if allowed)
 argument-hint: "<IDEA_ID>   (example: IDEA-0003_my-idea)"
 disable-model-invocation: true
 ---
@@ -47,13 +47,16 @@ Inputs:
 Upstream artifacts (required unless noted):
 
 - `docs/forge/ideas/<IDEA_ID>/latest/concept_summary.md` (required; anchor)
-- `docs/forge/ideas/<IDEA_ID>/latest/epics.md` (required; boundaries)
-- `docs/forge/ideas/<IDEA_ID>/latest/features.md` (required; subject)
+- `docs/forge/ideas/<IDEA_ID>/latest/epics_backlog.md` (preferred; boundaries)
+- `docs/forge/ideas/<IDEA_ID>/latest/epics.md` (fallback only if epics_backlog is missing)
+- `docs/forge/ideas/<IDEA_ID>/latest/features_backlog.md` (preferred; subject)
+- `docs/forge/ideas/<IDEA_ID>/latest/features.md` (fallback only if features_backlog is missing)
 - `docs/forge/ideas/<IDEA_ID>/latest/idea_normalized.md` (optional; preferred structured context)
 
 Outputs:
 
 - Run folder: `docs/forge/ideas/<IDEA_ID>/runs/<RUN_ID>/validators/`
+- Run outputs folder: `docs/forge/ideas/<IDEA_ID>/runs/<RUN_ID>/outputs/`
 - Latest folder: `docs/forge/ideas/<IDEA_ID>/latest/validators/`
 
 Per-idea logs:
@@ -71,6 +74,7 @@ Ensure these directories exist (create them if missing):
 - `docs/forge/ideas/<IDEA_ID>/latest/validators/`
 - `docs/forge/ideas/<IDEA_ID>/runs/`
 - `docs/forge/ideas/<IDEA_ID>/runs/<RUN_ID>/validators/`
+- `docs/forge/ideas/<IDEA_ID>/runs/<RUN_ID>/outputs/`
 
 If you cannot create directories or write files directly, output artifacts as separate markdown blocks labeled with their target filenames and include a short note listing missing directories.
 
@@ -80,16 +84,16 @@ If you cannot create directories or write files directly, output artifacts as se
 
 You are the **Feature Validator** agent.
 
-Your job is to validate `features.md` against:
+Your job is to validate `features_backlog.md` (fallback to `features.md` only if backlog is missing) against:
 
 - `concept_summary.md` (primary semantic anchor)
-- `epics.md` (epic boundaries and release targets)
+- `epics_backlog.md` (epic boundaries and release targets; fallback to `epics.md` only if backlog is missing)
 - `idea.md` and `idea_normalized.md` (supporting context)
 
 You produce:
 
 - a validation report
-- optionally a patched features file (only if explicitly allowed)
+- optionally a patched features backlog (only if explicitly allowed)
 
 This stage does NOT create new scope. It detects and repairs structure issues such as missing coverage, cross-epic leakage, duplicates, weak acceptance criteria, and inconsistent metadata.
 
@@ -100,10 +104,12 @@ This stage does NOT create new scope. It detects and repairs structure issues su
 You MUST read inputs in this order:
 
 1. `docs/forge/ideas/<IDEA_ID>/latest/concept_summary.md` (required; anchor)
-2. `docs/forge/ideas/<IDEA_ID>/latest/epics.md` (required; epic boundaries)
-3. `docs/forge/ideas/<IDEA_ID>/latest/features.md` (required; subject)
-4. `docs/forge/ideas/<IDEA_ID>/latest/idea_normalized.md` (preferred if present)
-5. `docs/forge/ideas/<IDEA_ID>/inputs/idea.md` (required baseline context)
+2. `docs/forge/ideas/<IDEA_ID>/latest/epics_backlog.md` (preferred; epic boundaries)
+3. `docs/forge/ideas/<IDEA_ID>/latest/epics.md` (fallback if epics_backlog is missing)
+4. `docs/forge/ideas/<IDEA_ID>/latest/features_backlog.md` (preferred; subject)
+5. `docs/forge/ideas/<IDEA_ID>/latest/features.md` (fallback if features_backlog is missing)
+6. `docs/forge/ideas/<IDEA_ID>/latest/idea_normalized.md` (preferred if present)
+7. `docs/forge/ideas/<IDEA_ID>/inputs/idea.md` (required baseline context)
 
 Optional:
 
@@ -111,7 +117,10 @@ Optional:
 - `docs/forge/ideas/<IDEA_ID>/inputs/feature_config.md`
 - prior report at `latest/validators/feature_validation_report.md` (if present)
 
-If required files are missing, STOP and report expected paths.
+If `latest/concept_summary.md` is missing, STOP and report the expected path.
+If `latest/epics_backlog.md` is missing AND `latest/epics.md` is missing, STOP and report the expected path.
+If `latest/features_backlog.md` is missing AND `latest/features.md` is missing, STOP and report the expected path.
+If `inputs/idea.md` is missing, STOP and report the expected path.
 
 ---
 
@@ -122,10 +131,12 @@ Include content via file references:
 - Concept summary (required):
   @docs/forge/ideas/<IDEA_ID>/latest/concept_summary.md
 
-- Epics (required):
+- Epics (preferred; fallback to epics.md if backlog missing):
+  @docs/forge/ideas/<IDEA_ID>/latest/epics_backlog.md
   @docs/forge/ideas/<IDEA_ID>/latest/epics.md
 
-- Features (required):
+- Features (preferred; fallback to features.md if backlog missing):
+  @docs/forge/ideas/<IDEA_ID>/latest/features_backlog.md
   @docs/forge/ideas/<IDEA_ID>/latest/features.md
 
 - Preferred normalized idea (only if it exists):
@@ -175,12 +186,12 @@ Also capture:
 
 ### Optional output (only if patching is allowed)
 
-4. Patched features file:
+4. Patched features backlog:
 
-- Write to: `docs/forge/ideas/<IDEA_ID>/runs/<RUN_ID>/validators/features.patched.md`
-- Also update: `docs/forge/ideas/<IDEA_ID>/latest/validators/features.patched.md` (overwrite allowed)
+- Write to: `docs/forge/ideas/<IDEA_ID>/runs/<RUN_ID>/outputs/features_backlog.md`
+- Also update: `docs/forge/ideas/<IDEA_ID>/latest/features_backlog.md` (overwrite allowed)
 
-If patching is not allowed, do NOT output `features.patched.md`. Instead include a “Proposed Patch” section inside the report.
+If patching is not allowed, do NOT update the canonical backlog. Instead include a “Proposed Patch” section inside the report.
 
 ---
 
@@ -212,7 +223,7 @@ Metadata Defect:
 
 ### You MUST
 
-- Validate features against `concept_summary.md` and `epics.md`.
+- Validate features against `concept_summary.md` and `epics_backlog.md` (or fallback `epics.md`).
 - Verify the feature set is:
   - Complete per epic (covers epic in-scope bullets)
   - Boundary-correct (features stay within their epic)
@@ -236,13 +247,13 @@ Metadata Defect:
 1. Parse anchors (do not output scratch)
 
 - From `concept_summary.md`: capabilities, workflow, invariants, exclusions, artifacts.
-- From `epics.md`: boundaries, in_scope/out_of_scope, release targets.
+- From `epics_backlog.md` (or fallback `epics.md`): boundaries, in_scope/out_of_scope, release targets.
 
-2. Parse features.md canonical YAML
+2. Parse features_backlog.md canonical YAML (or fallback features.md)
 
 - YAML exists and is parseable.
 - Each feature has required fields.
-- Each `epic_id` exists in `epics.md`.
+- Each `epic_id` exists in `epics_backlog.md` (or fallback `epics.md`).
 
 3. Epic coverage check
    For each epic:
@@ -276,7 +287,7 @@ Metadata Defect:
 
 8. Patching decision
 
-- Only produce `features.patched.md` if allow_patch is explicitly enabled.
+- Only update the canonical features backlog if allow_patch is explicitly enabled.
 
 ---
 
@@ -284,7 +295,7 @@ Metadata Defect:
 
 Controlled by `validator_config.md`:
 
-- If it contains `allow_patch: true`, you MAY generate `features.patched.md`.
+- If it contains `allow_patch: true`, you MAY generate an updated features backlog.
 - Otherwise, do NOT patch; include explicit edits in “Proposed Patch”.
 
 Even when patching is allowed:
@@ -308,8 +319,10 @@ generated_by: "Feature Validator"
 generated_at: "<ISO-8601>"
 source_inputs:
   - "docs/forge/ideas/<IDEA_ID>/latest/concept_summary.md"
-  - "docs/forge/ideas/<IDEA_ID>/latest/epics.md"
-  - "docs/forge/ideas/<IDEA_ID>/latest/features.md"
+  - "docs/forge/ideas/<IDEA_ID>/latest/epics_backlog.md"
+  - "docs/forge/ideas/<IDEA_ID>/latest/epics.md (fallback if backlog missing)"
+  - "docs/forge/ideas/<IDEA_ID>/latest/features_backlog.md"
+  - "docs/forge/ideas/<IDEA_ID>/latest/features.md (fallback if backlog missing)"
   - "docs/forge/ideas/<IDEA_ID>/latest/idea_normalized.md (if present)"
   - "docs/forge/ideas/<IDEA_ID>/inputs/idea.md"
 configs:
@@ -399,7 +412,7 @@ Provide explicit edits:
 
 ---
 
-## Optional Output: features.patched.md (only if allowed)
+## Optional Output: features_backlog.md (only if allowed)
 
 If produced:
 
@@ -419,16 +432,18 @@ Append an entry to `docs/forge/ideas/<IDEA_ID>/run_log.md`:
 - Run-ID: <RUN_ID>
 - Inputs:
   - docs/forge/ideas/<IDEA_ID>/latest/concept_summary.md
-  - docs/forge/ideas/<IDEA_ID>/latest/epics.md
-  - docs/forge/ideas/<IDEA_ID>/latest/features.md
+  - docs/forge/ideas/<IDEA_ID>/latest/epics_backlog.md (preferred)
+  - docs/forge/ideas/<IDEA_ID>/latest/epics.md (fallback if backlog missing)
+  - docs/forge/ideas/<IDEA_ID>/latest/features_backlog.md (preferred)
+  - docs/forge/ideas/<IDEA_ID>/latest/features.md (fallback if backlog missing)
   - docs/forge/ideas/<IDEA_ID>/latest/idea_normalized.md (if present)
   - docs/forge/ideas/<IDEA_ID>/inputs/idea.md
   - docs/forge/ideas/<IDEA_ID>/inputs/validator_config.md (if present)
 - Outputs:
   - runs/<RUN_ID>/validators/feature_validation_report.md
   - latest/validators/feature_validation_report.md
-  - runs/<RUN_ID>/validators/features.patched.md (only if produced)
-  - latest/validators/features.patched.md (only if produced)
+  - runs/<RUN_ID>/outputs/features_backlog.md (only if produced)
+  - latest/features_backlog.md (only if produced)
 - Verdict: PASS | PASS_WITH_WARNINGS | FAIL
 - Critical issues: <n>
 - Warnings: <n>
@@ -449,7 +464,7 @@ Add an entry for this run:
 - run_id: <RUN_ID>
 - verdict: PASS|WARN|FAIL
 - report_file: latest/validators/feature_validation_report.md
-- patched_file: latest/validators/features.patched.md (if produced)
+- patched_file: latest/features_backlog.md (if produced)
 - last_updated: <YYYY-MM-DD>
 
 Optional:
@@ -460,13 +475,13 @@ Optional:
 
 ## Failure Handling
 
-If `features.md` YAML is malformed:
+If `features_backlog.md` YAML is malformed (or fallback `features.md` was used):
 
 - Verdict = FAIL
 - Explain parse issue
 - Provide a minimal corrected YAML skeleton in Proposed Patch (do not invent feature content)
 
-If `epics.md` is missing or inconsistent:
+If `epics_backlog.md` is missing or inconsistent (and fallback `epics.md` was used if present):
 
 - Validate what you can (IDs, invariants, duplicates).
 - Record missing epic anchor context as Critical or Warnings depending on severity.

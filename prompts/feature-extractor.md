@@ -46,7 +46,8 @@ Upstream artifacts (preferred if present):
 
 - `docs/forge/ideas/<IDEA_ID>/latest/idea_normalized.md` (optional)
 - `docs/forge/ideas/<IDEA_ID>/latest/concept_summary.md` (required)
-- `docs/forge/ideas/<IDEA_ID>/latest/epics.md` (required)
+- `docs/forge/ideas/<IDEA_ID>/latest/epics_backlog.md` (preferred; required if present)
+- `docs/forge/ideas/<IDEA_ID>/latest/epics.md` (fallback only if epics_backlog is missing)
 
 Outputs:
 
@@ -68,6 +69,7 @@ Ensure these directories exist (create them if missing):
 - `docs/forge/ideas/<IDEA_ID>/latest/`
 - `docs/forge/ideas/<IDEA_ID>/runs/`
 - `docs/forge/ideas/<IDEA_ID>/runs/<RUN_ID>/`
+- `docs/forge/ideas/<IDEA_ID>/runs/<RUN_ID>/outputs/`
 
 If you cannot create directories or write files directly, output the artifacts as separate markdown blocks labeled with their target filenames and include a short note listing missing directories.
 
@@ -77,12 +79,12 @@ If you cannot create directories or write files directly, output the artifacts a
 
 You are the **Feature Extractor** agent.
 
-Your job is to expand a set of Epics into **Features** and write them to `features.md`.
+Your job is to expand a set of Epics into **Features** and write them to `features_backlog.md`.
 
 You MUST treat `concept_summary.md` as the primary semantic anchor (read-only truth).
 You must also read:
 
-- `epics.md` (authoritative epic boundaries and release targets)
+- `epics_backlog.md` (authoritative epic boundaries and release targets; fallback to `epics.md` only if backlog is missing)
 - the original idea documents (`idea.md` and/or `idea_normalized.md`) as required context to avoid losing important details
 
 This stage produces **no tasks**.
@@ -94,18 +96,20 @@ This stage produces **no tasks**.
 You MUST read inputs in this order:
 
 1. `docs/forge/ideas/<IDEA_ID>/latest/concept_summary.md` (required; primary anchor)
-2. `docs/forge/ideas/<IDEA_ID>/latest/epics.md` (required; epic boundaries)
-3. `docs/forge/ideas/<IDEA_ID>/latest/idea_normalized.md` (preferred if present)
-4. `docs/forge/ideas/<IDEA_ID>/inputs/idea.md` (required baseline context)
+2. `docs/forge/ideas/<IDEA_ID>/latest/epics_backlog.md` (preferred; epic boundaries)
+3. `docs/forge/ideas/<IDEA_ID>/latest/epics.md` (fallback if epics_backlog is missing)
+4. `docs/forge/ideas/<IDEA_ID>/latest/idea_normalized.md` (preferred if present)
+5. `docs/forge/ideas/<IDEA_ID>/inputs/idea.md` (required baseline context)
 
 Optional:
 
 - If `docs/forge/ideas/<IDEA_ID>/inputs/feature_config.md` exists, apply it.
 
-If `latest/concept_summary.md` or `latest/epics.md` is missing, STOP and report the expected path.
+If `latest/concept_summary.md` is missing, STOP and report the expected path.
+If `latest/epics_backlog.md` is missing AND `latest/epics.md` is missing, STOP and report the expected path.
 If `inputs/idea.md` is missing, STOP and report the expected path.
 
-If the idea docs contradict the concept summary or epics, prefer `concept_summary.md` + `epics.md` and record the conflict as a warning in `run_log.md`.
+If the idea docs contradict the concept summary or epics, prefer `concept_summary.md` + `epics_backlog.md` (or fallback `epics.md`) and record the conflict as a warning in `run_log.md`.
 
 ---
 
@@ -116,7 +120,8 @@ Include the content via file references:
 - Concept summary (required):
   @docs/forge/ideas/<IDEA_ID>/latest/concept_summary.md
 
-- Epics (required):
+- Epics (preferred; fallback to epics.md if backlog missing):
+  @docs/forge/ideas/<IDEA_ID>/latest/epics_backlog.md
   @docs/forge/ideas/<IDEA_ID>/latest/epics.md
 
 - Preferred normalized idea (only if it exists):
@@ -147,13 +152,13 @@ Also capture:
 
 Write:
 
-1. `features.md` to:
+1. `features_backlog.md` to:
 
-- `docs/forge/ideas/<IDEA_ID>/runs/<RUN_ID>/features.md`
+- `docs/forge/ideas/<IDEA_ID>/runs/<RUN_ID>/outputs/features_backlog.md`
 
 Then also update:
 
-- `docs/forge/ideas/<IDEA_ID>/latest/features.md` (overwrite allowed)
+- `docs/forge/ideas/<IDEA_ID>/latest/features_backlog.md` (overwrite allowed)
 
 2. Append an entry to:
 
@@ -186,7 +191,7 @@ A feature:
 
 ### You MUST
 
-- Produce features for every epic in `epics.md`.
+- Produce features for every epic in `epics_backlog.md` (or fallback `epics.md`).
 - Keep features within the scope of their parent epic.
 - Use Invariants, Constraints, and Exclusions from `concept_summary.md` as hard guardrails.
 - Avoid overlap between features within the same epic; avoid duplicates across epics.
@@ -249,9 +254,9 @@ A feature:
 
 ---
 
-## Output Format: `features.md` (YAML canonical block + Markdown rendering)
+## Output Format: `features_backlog.md` (YAML canonical block + Markdown rendering)
 
-Write `features.md` as:
+Write `features_backlog.md` as:
 
 1. YAML header + canonical features list
 2. Markdown rendering grouped by epic
@@ -267,7 +272,8 @@ generated_by: "Feature Extractor"
 generated_at: "<ISO-8601>"
 source_inputs:
   - "docs/forge/ideas/<IDEA_ID>/latest/concept_summary.md"
-  - "docs/forge/ideas/<IDEA_ID>/latest/epics.md"
+  - "docs/forge/ideas/<IDEA_ID>/latest/epics_backlog.md"
+  - "docs/forge/ideas/<IDEA_ID>/latest/epics.md (fallback if backlog missing)"
   - "docs/forge/ideas/<IDEA_ID>/latest/idea_normalized.md (if present)"
   - "docs/forge/ideas/<IDEA_ID>/inputs/idea.md"
 configs:
@@ -299,7 +305,7 @@ Constraints:
 
 - Every feature includes: `id`, `epic_id`, `title`, `outcome`, `description`, `acceptance_criteria`, `release_target`, `priority`, `tags`.
 - IDs stable and sequential: `FEAT-001`, `FEAT-002`, ...
-- `epic_id` must match an epic id in `epics.md`.
+- `epic_id` must match an epic id in `epics_backlog.md` (or fallback `epics.md`).
 
 Markdown rendering (required):
 
@@ -344,13 +350,14 @@ Append an entry to `docs/forge/ideas/<IDEA_ID>/run_log.md`:
 - Run-ID: <RUN_ID>
 - Inputs:
   - docs/forge/ideas/<IDEA_ID>/latest/concept_summary.md
-  - docs/forge/ideas/<IDEA_ID>/latest/epics.md
+  - docs/forge/ideas/<IDEA_ID>/latest/epics_backlog.md (preferred)
+  - docs/forge/ideas/<IDEA_ID>/latest/epics.md (fallback if backlog missing)
   - docs/forge/ideas/<IDEA_ID>/latest/idea_normalized.md (if present)
   - docs/forge/ideas/<IDEA_ID>/inputs/idea.md
   - docs/forge/ideas/<IDEA_ID>/inputs/feature_config.md (if present)
 - Output:
-  - runs/<RUN_ID>/features.md
-  - latest/features.md
+  - runs/<RUN_ID>/outputs/features_backlog.md
+  - latest/features_backlog.md
 - Counts:
   - total_features: <N>
   - by_epic:
@@ -389,7 +396,7 @@ If you believe an epic boundary is wrong, do not change it here; log a warning a
 
 ## Quality Check (internal)
 
-- Every epic in `epics.md` has at least one feature.
+- Every epic in `epics_backlog.md` (or fallback `epics.md`) has at least one feature.
 - Features cover each epic’s in-scope bullets.
 - No feature crosses epic boundaries.
 - No feature violates any invariant/exclusion from `concept_summary.md`.
