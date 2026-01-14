@@ -15,9 +15,19 @@ Run this command with an idea folder id:
 
 Where:
 
-- `IDEA_ID = $ARGUMENTS` (must be a single folder name; no spaces)
+- `IDEA_REF = $ARGUMENTS` (must be a single token; no spaces)
 
-If `IDEA_ID` is missing/empty, STOP and ask the user to rerun with an idea id.
+If `IDEA_REF` is missing/empty, STOP and ask the user to rerun with an idea id.
+
+---
+
+## Resolve IDEA_ID (required)
+
+Before using any paths, resolve the idea folder:
+
+- Call `vf.resolve_idea_id` with `idea_ref = $ARGUMENTS`
+- Store the returned `idea_id` as `IDEA_ID`
+- Use `IDEA_ID` for all paths, YAML headers, and run log entries
 
 ---
 
@@ -25,26 +35,26 @@ If `IDEA_ID` is missing/empty, STOP and ask the user to rerun with an idea id.
 
 Idea root:
 
-- `docs/forge/ideas/$ARGUMENTS/`
+- `docs/forge/ideas/<IDEA_ID>/`
 
 Inputs:
 
-- `docs/forge/ideas/$ARGUMENTS/inputs/idea.md` (required baseline input)
-- `docs/forge/ideas/$ARGUMENTS/inputs/concept_config.md` (optional)
+- `docs/forge/ideas/<IDEA_ID>/inputs/idea.md` (required baseline input)
+- `docs/forge/ideas/<IDEA_ID>/inputs/concept_config.md` (optional)
 
 Upstream normalized input (preferred if present):
 
-- `docs/forge/ideas/$ARGUMENTS/latest/idea_normalized.md` (optional)
+- `docs/forge/ideas/<IDEA_ID>/latest/idea_normalized.md` (optional)
 
 Outputs:
 
-- Run folder: `docs/forge/ideas/$ARGUMENTS/runs/<RUN_ID>/`
-- Latest folder: `docs/forge/ideas/$ARGUMENTS/latest/`
+- Run folder: `docs/forge/ideas/<IDEA_ID>/runs/<RUN_ID>/`
+- Latest folder: `docs/forge/ideas/<IDEA_ID>/latest/`
 
 Per-idea logs:
 
-- `docs/forge/ideas/$ARGUMENTS/run_log.md` (append-only)
-- `docs/forge/ideas/$ARGUMENTS/manifest.md` (rolling status)
+- `docs/forge/ideas/<IDEA_ID>/run_log.md` (append-only)
+- `docs/forge/ideas/<IDEA_ID>/manifest.md` (rolling status)
 
 ---
 
@@ -52,10 +62,10 @@ Per-idea logs:
 
 Ensure these directories exist (create them if missing):
 
-- `docs/forge/ideas/$ARGUMENTS/inputs/`
-- `docs/forge/ideas/$ARGUMENTS/latest/`
-- `docs/forge/ideas/$ARGUMENTS/runs/`
-- `docs/forge/ideas/$ARGUMENTS/runs/<RUN_ID>/`
+- `docs/forge/ideas/<IDEA_ID>/inputs/`
+- `docs/forge/ideas/<IDEA_ID>/latest/`
+- `docs/forge/ideas/<IDEA_ID>/runs/`
+- `docs/forge/ideas/<IDEA_ID>/runs/<RUN_ID>/`
 
 If you cannot create directories or write files directly, output the artifacts as separate markdown blocks labeled with their target filenames and include a short note listing missing directories.
 
@@ -75,14 +85,14 @@ Prioritize fidelity to the source over creativity.
 
 You MUST select sources in this order:
 
-1. If `docs/forge/ideas/$ARGUMENTS/latest/idea_normalized.md` exists:
+1. If `docs/forge/ideas/<IDEA_ID>/latest/idea_normalized.md` exists:
    - Use it as the primary input (because it is the normalized, structured version).
 2. Otherwise:
-   - Use `docs/forge/ideas/$ARGUMENTS/inputs/idea.md` as the primary input.
+   - Use `docs/forge/ideas/<IDEA_ID>/inputs/idea.md` as the primary input.
 
 Optional:
 
-- If `docs/forge/ideas/$ARGUMENTS/inputs/concept_config.md` exists, apply it.
+- If `docs/forge/ideas/<IDEA_ID>/inputs/concept_config.md` exists, apply it.
 
 If the required baseline input `inputs/idea.md` is missing, STOP and report the expected path.
 
@@ -93,13 +103,13 @@ If the required baseline input `inputs/idea.md` is missing, STOP and report the 
 Include the content via file references:
 
 - Baseline raw idea (always):
-  @docs/forge/ideas/$ARGUMENTS/inputs/idea.md
+  @docs/forge/ideas/<IDEA_ID>/inputs/idea.md
 
 - Preferred normalized idea (only if it exists):
-  @docs/forge/ideas/$ARGUMENTS/latest/idea_normalized.md
+  @docs/forge/ideas/<IDEA_ID>/latest/idea_normalized.md
 
 - Optional config (only if it exists):
-  @docs/forge/ideas/$ARGUMENTS/inputs/concept_config.md
+  @docs/forge/ideas/<IDEA_ID>/inputs/concept_config.md
 
 ---
 
@@ -122,19 +132,19 @@ Write:
 
 1. `concept_summary.md` to:
 
-- `docs/forge/ideas/$ARGUMENTS/runs/<RUN_ID>/concept_summary.md`
+- `docs/forge/ideas/<IDEA_ID>/runs/<RUN_ID>/concept_summary.md`
 
 Then also update:
 
-- `docs/forge/ideas/$ARGUMENTS/latest/concept_summary.md` (overwrite allowed)
+- `docs/forge/ideas/<IDEA_ID>/latest/concept_summary.md` (overwrite allowed)
 
 2. Append an entry to:
 
-- `docs/forge/ideas/$ARGUMENTS/run_log.md`
+- `docs/forge/ideas/<IDEA_ID>/run_log.md`
 
 3. Update (or create) the per-idea manifest at:
 
-- `docs/forge/ideas/$ARGUMENTS/manifest.md`
+- `docs/forge/ideas/<IDEA_ID>/manifest.md`
 
 If you cannot write to target paths, output these three artifacts as separate markdown blocks labeled with their full target filenames so another process can save them.
 
@@ -213,15 +223,15 @@ YAML header shape:
 ```yaml
 ---
 doc_type: concept_summary
-idea_id: "$ARGUMENTS"
+idea_id: "<IDEA_ID>"
 run_id: "<RUN_ID>"
 generated_by: "Concept Summarizer"
 generated_at: "<ISO-8601>"
 source_inputs:
-  - "docs/forge/ideas/$ARGUMENTS/inputs/idea.md"
-  - "docs/forge/ideas/$ARGUMENTS/latest/idea_normalized.md (if used)"
+  - "docs/forge/ideas/<IDEA_ID>/inputs/idea.md"
+  - "docs/forge/ideas/<IDEA_ID>/latest/idea_normalized.md (if used)"
 configs:
-  - "docs/forge/ideas/$ARGUMENTS/inputs/concept_config.md (if used)"
+  - "docs/forge/ideas/<IDEA_ID>/inputs/concept_config.md (if used)"
 release_targets_supported: ["MVP", "V1", "Full", "Later"]
 status: "Draft"
 ---
@@ -281,16 +291,16 @@ Required markdown sections:
 
 ## Logging Requirements: `run_log.md` (append-only)
 
-Append an entry in `docs/forge/ideas/$ARGUMENTS/run_log.md`:
+Append an entry in `docs/forge/ideas/<IDEA_ID>/run_log.md`:
 
 ### <ISO-8601 timestamp> — Concept Summarizer
 
-- Idea-ID: $ARGUMENTS
+- Idea-ID: <IDEA_ID>
 - Run-ID: <RUN_ID>
 - Inputs:
-  - docs/forge/ideas/$ARGUMENTS/inputs/idea.md
-  - docs/forge/ideas/$ARGUMENTS/latest/idea_normalized.md (if present)
-  - docs/forge/ideas/$ARGUMENTS/inputs/concept_config.md (if present)
+  - docs/forge/ideas/<IDEA_ID>/inputs/idea.md
+  - docs/forge/ideas/<IDEA_ID>/latest/idea_normalized.md (if present)
+  - docs/forge/ideas/<IDEA_ID>/inputs/concept_config.md (if present)
 - Outputs:
   - runs/<RUN_ID>/concept_summary.md
   - latest/concept_summary.md

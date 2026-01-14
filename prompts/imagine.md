@@ -27,6 +27,17 @@ Where:
 
 ---
 
+## Resolve IDEA_ID (required)
+
+Before using any paths, resolve or create the idea folder:
+
+- If `$ARGUMENTS` matches `^IDEA-\\d{4}(-.*)?$`, treat it as `IDEA_REF` and call `vf.resolve_idea_id` with `idea_ref = $ARGUMENTS`.
+- Otherwise, treat `$ARGUMENTS` as free-form idea text and call `vf.create_idea_from_text` with `initial_text = $ARGUMENTS`.
+- Store the returned `idea_id` as `IDEA_ID`.
+- Use `IDEA_ID` for all paths, YAML headers, and run log entries.
+
+---
+
 ## Goal
 
 Turn a rough idea into a **first, reviewable** `idea.md` stored at:
@@ -82,39 +93,10 @@ If you cannot create directories or write files directly, output the artifacts a
 
 ## Step 0 — Resolve or create IDEA_ID
 
-### If `$ARGUMENTS` looks like an IDEA folder id
-
-Treat as existing idea:
-
-- Recognize an IDEA_ID by: it starts with `IDEA-` and contains no spaces.
-
-Set:
-
-- `IDEA_ID = $ARGUMENTS`
-
-Then:
+Use the tool-based resolution logic from **Resolve IDEA_ID (required)** above, then proceed:
 
 - If `docs/forge/ideas/<IDEA_ID>/inputs/idea.md` exists, use it as the base idea.
-- If it does not exist, proceed as a new idea but keep the provided IDEA_ID.
-
-### Otherwise (free-form text)
-
-Treat `$ARGUMENTS` as **initial idea text** and create a new folder.
-
-1) Determine the next numeric id:
-   - List folders under `docs/forge/ideas/` matching `IDEA-????-*`
-   - Find the highest `????` as an integer
-   - Next id = highest + 1 (start at `0001` if none exist)
-
-2) Create a slug from the idea (filesystem-safe):
-   - lowercase
-   - replace spaces with hyphens
-   - remove non-alphanumeric characters except `-`
-   - collapse multiple hyphens
-   - limit to ~40 characters
-
-3) Set:
-   - `IDEA_ID = IDEA-<NEXT_4_DIGITS>-<slug>`
+- If it does not exist, proceed as a new idea using the resolved/created `IDEA_ID`.
 
 ---
 

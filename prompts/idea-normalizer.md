@@ -15,9 +15,19 @@ Run this command with an idea folder id:
 
 Where:
 
-- `IDEA_ID = $ARGUMENTS` (must be a single folder name; no spaces)
+- `IDEA_REF = $ARGUMENTS` (must be a single token; no spaces)
 
-If `IDEA_ID` is missing/empty, STOP and ask the user to rerun with an idea id.
+If `IDEA_REF` is missing/empty, STOP and ask the user to rerun with an idea id.
+
+---
+
+## Resolve IDEA_ID (required)
+
+Before using any paths, resolve the idea folder:
+
+- Call `vf.resolve_idea_id` with `idea_ref = $ARGUMENTS`
+- Store the returned `idea_id` as `IDEA_ID`
+- Use `IDEA_ID` for all paths, YAML headers, and run log entries
 
 ---
 
@@ -25,23 +35,23 @@ If `IDEA_ID` is missing/empty, STOP and ask the user to rerun with an idea id.
 
 Idea root:
 
-- `docs/forge/ideas/$ARGUMENTS/`
+- `docs/forge/ideas/<IDEA_ID>/`
 
 Inputs:
 
-- `docs/forge/ideas/$ARGUMENTS/inputs/idea.md`
-- `docs/forge/ideas/$ARGUMENTS/inputs/normalizer_config.md` (optional)
-- `docs/forge/ideas/$ARGUMENTS/inputs/normalizer_answers.md` (optional; created in interactive mode)
+- `docs/forge/ideas/<IDEA_ID>/inputs/idea.md`
+- `docs/forge/ideas/<IDEA_ID>/inputs/normalizer_config.md` (optional)
+- `docs/forge/ideas/<IDEA_ID>/inputs/normalizer_answers.md` (optional; created in interactive mode)
 
 Outputs:
 
-- Run folder: `docs/forge/ideas/$ARGUMENTS/runs/<RUN_ID>/`
-- Latest folder: `docs/forge/ideas/$ARGUMENTS/latest/`
+- Run folder: `docs/forge/ideas/<IDEA_ID>/runs/<RUN_ID>/`
+- Latest folder: `docs/forge/ideas/<IDEA_ID>/latest/`
 
 Per-idea logs:
 
-- `docs/forge/ideas/$ARGUMENTS/run_log.md` (append-only)
-- `docs/forge/ideas/$ARGUMENTS/manifest.md` (rolling status)
+- `docs/forge/ideas/<IDEA_ID>/run_log.md` (append-only)
+- `docs/forge/ideas/<IDEA_ID>/manifest.md` (rolling status)
 
 ---
 
@@ -49,10 +59,10 @@ Per-idea logs:
 
 Ensure these directories exist (create them if missing):
 
-- `docs/forge/ideas/$ARGUMENTS/inputs/`
-- `docs/forge/ideas/$ARGUMENTS/latest/`
-- `docs/forge/ideas/$ARGUMENTS/runs/`
-- `docs/forge/ideas/$ARGUMENTS/runs/<RUN_ID>/`
+- `docs/forge/ideas/<IDEA_ID>/inputs/`
+- `docs/forge/ideas/<IDEA_ID>/latest/`
+- `docs/forge/ideas/<IDEA_ID>/runs/`
+- `docs/forge/ideas/<IDEA_ID>/runs/<RUN_ID>/`
 
 If you cannot create directories or write files directly, output the artifacts as separate markdown blocks labeled with their target filenames and include a short note listing missing directories.
 
@@ -62,12 +72,12 @@ If you cannot create directories or write files directly, output the artifacts a
 
 ### Required
 
-- `idea.md` at `docs/forge/ideas/$ARGUMENTS/inputs/idea.md`
+- `idea.md` at `docs/forge/ideas/<IDEA_ID>/inputs/idea.md`
 
 ### Optional
 
-- `normalizer_config.md` at `docs/forge/ideas/$ARGUMENTS/inputs/normalizer_config.md`
-- `normalizer_answers.md` at `docs/forge/ideas/$ARGUMENTS/inputs/normalizer_answers.md` (if it exists)
+- `normalizer_config.md` at `docs/forge/ideas/<IDEA_ID>/inputs/normalizer_config.md`
+- `normalizer_answers.md` at `docs/forge/ideas/<IDEA_ID>/inputs/normalizer_answers.md` (if it exists)
 
 If `idea.md` is missing, STOP and report the expected path.
 
@@ -78,13 +88,13 @@ If `idea.md` is missing, STOP and report the expected path.
 Use file references to pull content into context:
 
 - Raw idea:
-  @docs/forge/ideas/$ARGUMENTS/inputs/idea.md
+  @docs/forge/ideas/<IDEA_ID>/inputs/idea.md
 
 - Optional config (only if it exists):
-  @docs/forge/ideas/$ARGUMENTS/inputs/normalizer_config.md
+  @docs/forge/ideas/<IDEA_ID>/inputs/normalizer_config.md
 
 - Optional prior answers (only if it exists):
-  @docs/forge/ideas/$ARGUMENTS/inputs/normalizer_answers.md
+  @docs/forge/ideas/<IDEA_ID>/inputs/normalizer_answers.md
 
 ---
 
@@ -107,29 +117,29 @@ Also capture:
 
 1) Write a draft to the run folder:
 
-- `docs/forge/ideas/$ARGUMENTS/runs/<RUN_ID>/idea_normalized_draft.md`
+- `docs/forge/ideas/<IDEA_ID>/runs/<RUN_ID>/idea_normalized_draft.md`
 
 2) Write the Open Questions list for the run:
 
-- `docs/forge/ideas/$ARGUMENTS/runs/<RUN_ID>/open_questions.md`
+- `docs/forge/ideas/<IDEA_ID>/runs/<RUN_ID>/open_questions.md`
 
 ### Final outputs (only after questions are resolved OR if no questions exist)
 
 3) Write final `idea_normalized.md` to:
 
-- `docs/forge/ideas/$ARGUMENTS/runs/<RUN_ID>/idea_normalized.md`
+- `docs/forge/ideas/<IDEA_ID>/runs/<RUN_ID>/idea_normalized.md`
 
 Then also update:
 
-- `docs/forge/ideas/$ARGUMENTS/latest/idea_normalized.md` (overwrite allowed)
+- `docs/forge/ideas/<IDEA_ID>/latest/idea_normalized.md` (overwrite allowed)
 
 4) Append an entry to:
 
-- `docs/forge/ideas/$ARGUMENTS/run_log.md`
+- `docs/forge/ideas/<IDEA_ID>/run_log.md`
 
 5) Update (or create) the per-idea manifest at:
 
-- `docs/forge/ideas/$ARGUMENTS/manifest.md`
+- `docs/forge/ideas/<IDEA_ID>/manifest.md`
 
 ---
 
@@ -157,7 +167,7 @@ Also append a run_log entry with:
 When the user replies:
 
 1) Save the user’s answers to:
-- `docs/forge/ideas/$ARGUMENTS/inputs/normalizer_answers.md`
+- `docs/forge/ideas/<IDEA_ID>/inputs/normalizer_answers.md`
   - Append a new section with header: `### <ISO-8601> — Answers for <RUN_ID>`
 
 2) Produce final `idea_normalized.md`:
@@ -231,15 +241,15 @@ Write `idea_normalized.md` with a YAML header followed by required sections.
 ```yaml
 ---
 doc_type: idea_normalized
-idea_id: "$ARGUMENTS"
+idea_id: "<IDEA_ID>"
 run_id: "<RUN_ID>"
 generated_by: "Idea Normalizer"
 generated_at: "<ISO-8601>"
 source_inputs:
-  - "docs/forge/ideas/$ARGUMENTS/inputs/idea.md"
+  - "docs/forge/ideas/<IDEA_ID>/inputs/idea.md"
 configs:
-  - "docs/forge/ideas/$ARGUMENTS/inputs/normalizer_config.md (if used)"
-  - "docs/forge/ideas/$ARGUMENTS/inputs/normalizer_answers.md (if used)"
+  - "docs/forge/ideas/<IDEA_ID>/inputs/normalizer_config.md (if used)"
+  - "docs/forge/ideas/<IDEA_ID>/inputs/normalizer_answers.md (if used)"
 status: "Draft"
 ---
 ```
@@ -310,12 +320,12 @@ Append an entry with this shape:
 ```md
 ### <ISO-8601 timestamp> — Idea Normalizer
 
-- Idea-ID: $ARGUMENTS
+- Idea-ID: <IDEA_ID>
 - Run-ID: <RUN_ID>
 - Inputs:
-  - docs/forge/ideas/$ARGUMENTS/inputs/idea.md
-  - docs/forge/ideas/$ARGUMENTS/inputs/normalizer_config.md (if present)
-  - docs/forge/ideas/$ARGUMENTS/inputs/normalizer_answers.md (if present)
+  - docs/forge/ideas/<IDEA_ID>/inputs/idea.md
+  - docs/forge/ideas/<IDEA_ID>/inputs/normalizer_config.md (if present)
+  - docs/forge/ideas/<IDEA_ID>/inputs/normalizer_answers.md (if present)
 - Outputs:
   - runs/<RUN_ID>/idea_normalized_draft.md
   - runs/<RUN_ID>/open_questions.md
@@ -336,7 +346,7 @@ If it exists, update ONLY the keys under the `Idea` section.
 ### Manifest template (if creating new)
 
 ```md
-# Manifest — $ARGUMENTS
+# Manifest — <IDEA_ID>
 
 ## Idea
 

@@ -15,9 +15,19 @@ Run this command with an idea folder id:
 
 Where:
 
-- `IDEA_ID = $ARGUMENTS` (must be a single folder name; no spaces)
+- `IDEA_REF = $ARGUMENTS` (must be a single token; no spaces)
 
-If `IDEA_ID` is missing/empty, STOP and ask the user to rerun with an idea id.
+If `IDEA_REF` is missing/empty, STOP and ask the user to rerun with an idea id.
+
+---
+
+## Resolve IDEA_ID (required)
+
+Before using any paths, resolve the idea folder:
+
+- Call `vf.resolve_idea_id` with `idea_ref = $ARGUMENTS`
+- Store the returned `idea_id` as `IDEA_ID`
+- Use `IDEA_ID` for all paths, YAML headers, and run log entries
 
 ---
 
@@ -25,27 +35,27 @@ If `IDEA_ID` is missing/empty, STOP and ask the user to rerun with an idea id.
 
 Idea root:
 
-- `docs/forge/ideas/$ARGUMENTS/`
+- `docs/forge/ideas/<IDEA_ID>/`
 
 Inputs:
 
-- `docs/forge/ideas/$ARGUMENTS/inputs/idea.md` (required baseline input)
-- `docs/forge/ideas/$ARGUMENTS/inputs/epic_config.md` (optional)
+- `docs/forge/ideas/<IDEA_ID>/inputs/idea.md` (required baseline input)
+- `docs/forge/ideas/<IDEA_ID>/inputs/epic_config.md` (optional)
 
 Upstream artifacts (preferred if present):
 
-- `docs/forge/ideas/$ARGUMENTS/latest/idea_normalized.md` (optional)
-- `docs/forge/ideas/$ARGUMENTS/latest/concept_summary.md` (required; semantic anchor)
+- `docs/forge/ideas/<IDEA_ID>/latest/idea_normalized.md` (optional)
+- `docs/forge/ideas/<IDEA_ID>/latest/concept_summary.md` (required; semantic anchor)
 
 Outputs:
 
-- Run folder: `docs/forge/ideas/$ARGUMENTS/runs/<RUN_ID>/`
-- Latest folder: `docs/forge/ideas/$ARGUMENTS/latest/`
+- Run folder: `docs/forge/ideas/<IDEA_ID>/runs/<RUN_ID>/`
+- Latest folder: `docs/forge/ideas/<IDEA_ID>/latest/`
 
 Per-idea logs:
 
-- `docs/forge/ideas/$ARGUMENTS/run_log.md` (append-only)
-- `docs/forge/ideas/$ARGUMENTS/manifest.md` (rolling status/index)
+- `docs/forge/ideas/<IDEA_ID>/run_log.md` (append-only)
+- `docs/forge/ideas/<IDEA_ID>/manifest.md` (rolling status/index)
 
 ---
 
@@ -53,10 +63,10 @@ Per-idea logs:
 
 Ensure these directories exist (create them if missing):
 
-- `docs/forge/ideas/$ARGUMENTS/inputs/`
-- `docs/forge/ideas/$ARGUMENTS/latest/`
-- `docs/forge/ideas/$ARGUMENTS/runs/`
-- `docs/forge/ideas/$ARGUMENTS/runs/<RUN_ID>/`
+- `docs/forge/ideas/<IDEA_ID>/inputs/`
+- `docs/forge/ideas/<IDEA_ID>/latest/`
+- `docs/forge/ideas/<IDEA_ID>/runs/`
+- `docs/forge/ideas/<IDEA_ID>/runs/<RUN_ID>/`
 
 If you cannot create directories or write files directly, output the artifacts as separate markdown blocks labeled with their target filenames and include a short note listing missing directories.
 
@@ -79,13 +89,13 @@ This stage produces **no features** and **no tasks**.
 
 You MUST read inputs in this order:
 
-1. `docs/forge/ideas/$ARGUMENTS/latest/concept_summary.md` (required; primary anchor)
-2. `docs/forge/ideas/$ARGUMENTS/latest/idea_normalized.md` (preferred if present)
-3. `docs/forge/ideas/$ARGUMENTS/inputs/idea.md` (required baseline context)
+1. `docs/forge/ideas/<IDEA_ID>/latest/concept_summary.md` (required; primary anchor)
+2. `docs/forge/ideas/<IDEA_ID>/latest/idea_normalized.md` (preferred if present)
+3. `docs/forge/ideas/<IDEA_ID>/inputs/idea.md` (required baseline context)
 
 Optional:
 
-- If `docs/forge/ideas/$ARGUMENTS/inputs/epic_config.md` exists, apply it.
+- If `docs/forge/ideas/<IDEA_ID>/inputs/epic_config.md` exists, apply it.
 
 If `latest/concept_summary.md` is missing, STOP and report the expected path.
 If `inputs/idea.md` is missing, STOP and report the expected path.
@@ -99,16 +109,16 @@ If the idea docs contradict the concept summary, prefer the concept summary and 
 Include the content via file references:
 
 - Concept summary (required):
-  @docs/forge/ideas/$ARGUMENTS/latest/concept_summary.md
+  @docs/forge/ideas/<IDEA_ID>/latest/concept_summary.md
 
 - Preferred normalized idea (only if it exists):
-  @docs/forge/ideas/$ARGUMENTS/latest/idea_normalized.md
+  @docs/forge/ideas/<IDEA_ID>/latest/idea_normalized.md
 
 - Baseline raw idea (always):
-  @docs/forge/ideas/$ARGUMENTS/inputs/idea.md
+  @docs/forge/ideas/<IDEA_ID>/inputs/idea.md
 
 - Optional config (only if it exists):
-  @docs/forge/ideas/$ARGUMENTS/inputs/epic_config.md
+  @docs/forge/ideas/<IDEA_ID>/inputs/epic_config.md
 
 ---
 
@@ -131,19 +141,19 @@ Write:
 
 1. `epics.md` to:
 
-- `docs/forge/ideas/$ARGUMENTS/runs/<RUN_ID>/epics.md`
+- `docs/forge/ideas/<IDEA_ID>/runs/<RUN_ID>/epics.md`
 
 Then also update:
 
-- `docs/forge/ideas/$ARGUMENTS/latest/epics.md` (overwrite allowed)
+- `docs/forge/ideas/<IDEA_ID>/latest/epics.md` (overwrite allowed)
 
 2. Append an entry to:
 
-- `docs/forge/ideas/$ARGUMENTS/run_log.md`
+- `docs/forge/ideas/<IDEA_ID>/run_log.md`
 
 3. Update (or create) the per-idea manifest at:
 
-- `docs/forge/ideas/$ARGUMENTS/manifest.md`
+- `docs/forge/ideas/<IDEA_ID>/manifest.md`
   - Update ONLY the `Epics` section.
   - Do not create unrelated headings.
 
@@ -239,16 +249,16 @@ YAML header + canonical epics list (example):
 ```yaml
 ---
 doc_type: epics
-idea_id: "$ARGUMENTS"
+idea_id: "<IDEA_ID>"
 run_id: "<RUN_ID>"
 generated_by: "Epic Extractor"
 generated_at: "<ISO-8601>"
 source_inputs:
-  - "docs/forge/ideas/$ARGUMENTS/latest/concept_summary.md"
-  - "docs/forge/ideas/$ARGUMENTS/latest/idea_normalized.md (if present)"
-  - "docs/forge/ideas/$ARGUMENTS/inputs/idea.md"
+  - "docs/forge/ideas/<IDEA_ID>/latest/concept_summary.md"
+  - "docs/forge/ideas/<IDEA_ID>/latest/idea_normalized.md (if present)"
+  - "docs/forge/ideas/<IDEA_ID>/inputs/idea.md"
 configs:
-  - "docs/forge/ideas/$ARGUMENTS/inputs/epic_config.md (if used)"
+  - "docs/forge/ideas/<IDEA_ID>/inputs/epic_config.md (if used)"
 release_targets_supported: ["MVP", "V1", "Full", "Later"]
 status: "Draft"
 ---
@@ -308,18 +318,18 @@ Markdown rendering (required):
 
 ## Logging Requirements: `run_log.md` (append-only)
 
-Append an entry to `docs/forge/ideas/$ARGUMENTS/run_log.md`:
+Append an entry to `docs/forge/ideas/<IDEA_ID>/run_log.md`:
 
 ```md
 ### <ISO-8601 timestamp> — Epic Extractor
 
-- Idea-ID: $ARGUMENTS
+- Idea-ID: <IDEA_ID>
 - Run-ID: <RUN_ID>
 - Inputs:
-  - docs/forge/ideas/$ARGUMENTS/latest/concept_summary.md
-  - docs/forge/ideas/$ARGUMENTS/latest/idea_normalized.md (if present)
-  - docs/forge/ideas/$ARGUMENTS/inputs/idea.md
-  - docs/forge/ideas/$ARGUMENTS/inputs/epic_config.md (if present)
+  - docs/forge/ideas/<IDEA_ID>/latest/concept_summary.md
+  - docs/forge/ideas/<IDEA_ID>/latest/idea_normalized.md (if present)
+  - docs/forge/ideas/<IDEA_ID>/inputs/idea.md
+  - docs/forge/ideas/<IDEA_ID>/inputs/epic_config.md (if present)
 - Output:
   - runs/<RUN_ID>/epics.md
   - latest/epics.md
@@ -337,7 +347,7 @@ If you can compute file hashes, include them; otherwise omit hashes.
 
 Update or create an `Epics` section in:
 
-- `docs/forge/ideas/$ARGUMENTS/manifest.md`
+- `docs/forge/ideas/<IDEA_ID>/manifest.md`
 
 For each epic, add a concise index record:
 
