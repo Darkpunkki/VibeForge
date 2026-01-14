@@ -43,8 +43,10 @@ Before using any idea-scoped paths:
 
 ### Optional context (read-only, if present)
 
-- `docs/forge/ideas/<IDEA_ID>/latest/features.md`
-- `docs/forge/ideas/<IDEA_ID>/latest/epics.md`
+- `docs/forge/ideas/<IDEA_ID>/latest/features_backlog.md` (preferred; fallback to features.md if backlog missing)
+- `docs/forge/ideas/<IDEA_ID>/latest/features.md` (fallback if backlog missing)
+- `docs/forge/ideas/<IDEA_ID>/latest/epics_backlog.md` (preferred; fallback to epics.md if backlog missing)
+- `docs/forge/ideas/<IDEA_ID>/latest/epics.md` (fallback if backlog missing)
 - `docs/forge/ideas/<IDEA_ID>/latest/concept_summary.md`
 - `docs/forge/ideas/<IDEA_ID>/latest/idea_normalized.md`
 - `docs/forge/ideas/<IDEA_ID>/inputs/idea.md`
@@ -234,7 +236,7 @@ For each task in the ordered queue:
 ### 6.1 — Preparation
 
 - Identify relevant context:
-  - feature/epic context (if `features.md`/`epics.md` exist)
+  - feature/epic context (if `features_backlog.md`/`epics_backlog.md` exist; fallback to `features.md`/`epics.md` if backlog missing)
   - concept constraints/invariants (if `concept_summary.md` exists)
 - Only update documentation if the change introduces NEW decisions or changes existing intent.
 

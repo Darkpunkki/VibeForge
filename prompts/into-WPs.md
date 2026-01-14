@@ -71,8 +71,10 @@ Idea backlog (canonical):
 
 For better titles/context (do not derive tasks from these):
 
-- `docs/forge/ideas/<IDEA_ID>/latest/features.md`
-- `docs/forge/ideas/<IDEA_ID>/latest/epics.md`
+- `docs/forge/ideas/<IDEA_ID>/latest/features_backlog.md` (preferred; fallback to features.md if backlog missing)
+- `docs/forge/ideas/<IDEA_ID>/latest/features.md` (fallback if backlog missing)
+- `docs/forge/ideas/<IDEA_ID>/latest/epics_backlog.md` (preferred; fallback to epics.md if backlog missing)
+- `docs/forge/ideas/<IDEA_ID>/latest/epics.md` (fallback if backlog missing)
 - `docs/forge/ideas/<IDEA_ID>/latest/concept_summary.md`
 
 ---
@@ -201,7 +203,7 @@ For each WP batch selected:
 
 1) WP Title (short, readable):
 
-- Prefer: `<EPIC title> — <Feature title> (slice)` if `features.md`/`epics.md` are available
+- Prefer: `<EPIC title> — <Feature title> (slice)` if `features_backlog.md`/`epics_backlog.md` are available (fallback to `features.md`/`epics.md` if backlog missing)
 - Otherwise: derive from dominant `feature_id`/`epic_id` + common tags
 - Keep it human-scannable
 

@@ -1,6 +1,6 @@
 ---
 name: Validate tasks
-description: Validate tasks.md for an idea against concept_summary.md and features.md (writes report to ideas/<IDEA_ID>/runs and updates ideas/<IDEA_ID>/latest; optional patch if allowed)
+description: Validate tasks.md for an idea against concept_summary.md and features_backlog.md (writes report to ideas/<IDEA_ID>/runs and updates ideas/<IDEA_ID>/latest; optional patch if allowed)
 argument-hint: "<IDEA_ID>   (example: IDEA-0003_my-idea)"
 disable-model-invocation: true
 ---
@@ -47,9 +47,11 @@ Inputs:
 Upstream artifacts (required unless noted):
 
 - `docs/forge/ideas/<IDEA_ID>/latest/concept_summary.md` (required; anchor)
-- `docs/forge/ideas/<IDEA_ID>/latest/features.md` (required; feature boundaries)
+- `docs/forge/ideas/<IDEA_ID>/latest/features_backlog.md` (preferred; feature boundaries)
+- `docs/forge/ideas/<IDEA_ID>/latest/features.md` (fallback only if features_backlog is missing)
 - `docs/forge/ideas/<IDEA_ID>/latest/tasks.md` (required; subject)
-- `docs/forge/ideas/<IDEA_ID>/latest/epics.md` (optional but recommended; cross-check epic alignment)
+- `docs/forge/ideas/<IDEA_ID>/latest/epics_backlog.md` (optional but recommended; cross-check epic alignment)
+- `docs/forge/ideas/<IDEA_ID>/latest/epics.md` (fallback only if epics_backlog is missing)
 - `docs/forge/ideas/<IDEA_ID>/latest/idea_normalized.md` (optional; preferred structured context)
 
 Outputs:
@@ -85,8 +87,8 @@ You are the **Task Validator** agent.
 Your job is to validate `tasks.md` against:
 
 - `concept_summary.md` (primary semantic anchor)
-- `features.md` (feature boundaries and acceptance criteria)
-- `epics.md` (optional cross-check for epic alignment)
+- `features_backlog.md` (feature boundaries and acceptance criteria; fallback to `features.md` only if backlog is missing)
+- `epics_backlog.md` (optional cross-check for epic alignment; fallback to `epics.md` only if backlog is missing)
 - `idea.md` and `idea_normalized.md` (supporting context)
 
 You produce:
@@ -103,11 +105,13 @@ This stage does NOT generate code. It ensures tasks are implementable, correctly
 You MUST read inputs in this order:
 
 1. `docs/forge/ideas/<IDEA_ID>/latest/concept_summary.md` (required; anchor)
-2. `docs/forge/ideas/<IDEA_ID>/latest/features.md` (required; primary upstream requirements)
-3. `docs/forge/ideas/<IDEA_ID>/latest/tasks.md` (required; subject)
-4. `docs/forge/ideas/<IDEA_ID>/latest/epics.md` (if present; cross-check only)
-5. `docs/forge/ideas/<IDEA_ID>/latest/idea_normalized.md` (preferred if present)
-6. `docs/forge/ideas/<IDEA_ID>/inputs/idea.md` (required baseline context)
+2. `docs/forge/ideas/<IDEA_ID>/latest/features_backlog.md` (preferred; primary upstream requirements)
+3. `docs/forge/ideas/<IDEA_ID>/latest/features.md` (fallback if features_backlog is missing)
+4. `docs/forge/ideas/<IDEA_ID>/latest/tasks.md` (required; subject)
+5. `docs/forge/ideas/<IDEA_ID>/latest/epics_backlog.md` (if present; cross-check only)
+6. `docs/forge/ideas/<IDEA_ID>/latest/epics.md` (fallback if epics_backlog is missing)
+7. `docs/forge/ideas/<IDEA_ID>/latest/idea_normalized.md` (preferred if present)
+8. `docs/forge/ideas/<IDEA_ID>/inputs/idea.md` (required baseline context)
 
 Optional:
 
@@ -115,7 +119,10 @@ Optional:
 - `docs/forge/ideas/<IDEA_ID>/inputs/task_config.md`
 - prior report at `latest/validators/task_validation_report.md` (if present)
 
-If required files are missing, STOP and report expected paths.
+If `latest/concept_summary.md` is missing, STOP and report the expected path.
+If `latest/features_backlog.md` is missing AND `latest/features.md` is missing, STOP and report the expected path.
+If `latest/tasks.md` is missing, STOP and report the expected path.
+If `inputs/idea.md` is missing, STOP and report the expected path.
 
 ---
 
@@ -126,13 +133,15 @@ Include content via file references:
 - Concept summary (required):
   @docs/forge/ideas/<IDEA_ID>/latest/concept_summary.md
 
-- Features (required):
+- Features (preferred; fallback to features.md if backlog missing):
+  @docs/forge/ideas/<IDEA_ID>/latest/features_backlog.md
   @docs/forge/ideas/<IDEA_ID>/latest/features.md
 
 - Tasks (required):
   @docs/forge/ideas/<IDEA_ID>/latest/tasks.md
 
 - Epics (optional, if present):
+  @docs/forge/ideas/<IDEA_ID>/latest/epics_backlog.md
   @docs/forge/ideas/<IDEA_ID>/latest/epics.md
 
 - Preferred normalized idea (only if it exists):
@@ -227,7 +236,7 @@ Metadata Defect:
 
 ### You MUST
 
-- Validate tasks against `features.md` and `concept_summary.md`.
+- Validate tasks against `features_backlog.md` (or fallback `features.md`) and `concept_summary.md`.
 - Verify tasks are:
   - Complete per feature (cover feature acceptance criteria)
   - Implementable (small, concrete)
@@ -252,14 +261,14 @@ Metadata Defect:
 1. Parse anchors (do not output scratch)
 
 - From `concept_summary.md`: invariants/exclusions and key constraints.
-- From `features.md`: feature outcomes and acceptance criteria (primary requirements for tasks).
-- From `epics.md` (optional): cross-check epic alignment.
+- From `features_backlog.md` (or fallback `features.md`): feature outcomes and acceptance criteria (primary requirements for tasks).
+- From `epics_backlog.md` (optional; fallback to `epics.md`): cross-check epic alignment.
 
 2. Parse tasks.md canonical YAML
 
 - YAML exists and is parseable.
 - Each task has required fields.
-- Each `feature_id` exists in `features.md`.
+- Each `feature_id` exists in `features_backlog.md` (or fallback `features.md`).
 - Each task’s `epic_id` matches the epic_id of its parent feature.
 
 3. Per-feature coverage check
@@ -329,9 +338,11 @@ generated_by: "Task Validator"
 generated_at: "<ISO-8601>"
 source_inputs:
   - "docs/forge/ideas/<IDEA_ID>/latest/concept_summary.md"
-  - "docs/forge/ideas/<IDEA_ID>/latest/features.md"
+  - "docs/forge/ideas/<IDEA_ID>/latest/features_backlog.md"
+  - "docs/forge/ideas/<IDEA_ID>/latest/features.md (fallback if backlog missing)"
   - "docs/forge/ideas/<IDEA_ID>/latest/tasks.md"
-  - "docs/forge/ideas/<IDEA_ID>/latest/epics.md (if present)"
+  - "docs/forge/ideas/<IDEA_ID>/latest/epics_backlog.md (if present)"
+  - "docs/forge/ideas/<IDEA_ID>/latest/epics.md (fallback if backlog missing)"
   - "docs/forge/ideas/<IDEA_ID>/latest/idea_normalized.md (if present)"
   - "docs/forge/ideas/<IDEA_ID>/inputs/idea.md"
 configs:
@@ -433,8 +444,11 @@ Append an entry to `docs/forge/ideas/<IDEA_ID>/run_log.md`:
 - Run-ID: <RUN_ID>
 - Inputs:
   - docs/forge/ideas/<IDEA_ID>/latest/concept_summary.md
-  - docs/forge/ideas/<IDEA_ID>/latest/features.md
+  - docs/forge/ideas/<IDEA_ID>/latest/features_backlog.md (preferred)
+  - docs/forge/ideas/<IDEA_ID>/latest/features.md (fallback if backlog missing)
   - docs/forge/ideas/<IDEA_ID>/latest/tasks.md
+  - docs/forge/ideas/<IDEA_ID>/latest/epics_backlog.md (if present)
+  - docs/forge/ideas/<IDEA_ID>/latest/epics.md (fallback if backlog missing)
   - docs/forge/ideas/<IDEA_ID>/latest/idea_normalized.md (if present)
   - docs/forge/ideas/<IDEA_ID>/inputs/idea.md
   - docs/forge/ideas/<IDEA_ID>/inputs/validator_config.md (if present)
@@ -480,7 +494,7 @@ If `tasks.md` YAML is malformed:
 - Explain parse issue
 - Provide a minimal corrected YAML skeleton in Proposed Patch (do not invent task content)
 
-If `features.md` is missing or inconsistent:
+If `features_backlog.md` is missing or inconsistent (and fallback `features.md` was used if present):
 
 - Validate what you can (IDs, invariants, duplicates, vague tasks).
 - Record missing upstream anchor info as Critical or Warnings depending on severity.
