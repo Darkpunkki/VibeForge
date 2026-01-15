@@ -42,6 +42,7 @@ Inputs:
 - `docs/forge/ideas/<IDEA_ID>/inputs/idea.md` (required baseline input)
 - `docs/forge/ideas/<IDEA_ID>/inputs/task_config.md` (optional)
 
+
 Optional upstream reference:
 
 - `docs/forge/ideas/<IDEA_ID>/latest/idea_normalized.md` (optional)
@@ -96,6 +97,16 @@ This stage produces **no code**. It produces backlog tasks only.
 
 ## Inputs (how to choose sources)
 
+### Existing Solution Map (required for repo-grounded tasks)
+
+Tasks MUST be grounded in the existing codebase to avoid duplicate/overlapping implementations.
+
+- Required: `docs/forge/ideas/<IDEA_ID>/latest/existing_solution_map.md`
+
+If `existing_solution_map.md` is missing:
+- STOP and instruct the user to run `/existing-solution-map <IDEA_ID>` (optionally scoped to the epic) before generating tasks.
+
+
 You MUST read inputs in this order:
 
 1. `docs/forge/ideas/<IDEA_ID>/latest/concept_summary.md` (required; primary anchor)
@@ -141,6 +152,10 @@ Include the content via file references:
 
 - Optional config (only if it exists):
   @docs/forge/ideas/<IDEA_ID>/inputs/task_config.md
+
+- Existing solution map (required):
+  @docs/forge/ideas/<IDEA_ID>/latest/existing_solution_map.md
+  
 
 ---
 
@@ -213,6 +228,11 @@ Tasks may be technical (routes, persistence, UI components) because this stage i
   - Implementation work
   - Tests/verification
   - Documentation updates (only where meaningful)
+- For every task, include:
+  - Target files/modules to change (from the solution map touch list), and
+  - Reuse notes (what existing component/pattern is extended; what must NOT be duplicated)
+- Prefer “extend/modify existing component” tasks over “create new subsystem” tasks unless the solution map explicitly lists a gap.
+
 
 ### You MUST NOT
 

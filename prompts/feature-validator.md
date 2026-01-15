@@ -44,6 +44,18 @@ Inputs:
 - `docs/forge/ideas/<IDEA_ID>/inputs/feature_config.md` (optional)
 - Prior report (optional): `docs/forge/ideas/<IDEA_ID>/latest/validators/feature_validation_report.md`
 
+### Optional codebase anchor (recommended)
+
+If it exists, use `codebase_context.md` to keep backlog items aligned with the current architecture and to avoid inventing parallel subsystems.
+
+- `docs/forge/ideas/<IDEA_ID>/latest/codebase_context.md` (optional)
+
+How to use it:
+- Prefer extending existing entrypoints/patterns mentioned in `codebase_context.md`
+- Avoid proposing new top-level modules if `codebase_context.md` indicates extension points
+- If `codebase_context.md` conflicts with the idea docs, record the conflict as an Open Question (do not guess)
+
+
 Upstream artifacts (required unless noted):
 
 - `docs/forge/ideas/<IDEA_ID>/latest/concept_summary.md` (required; anchor)
@@ -63,6 +75,18 @@ Per-idea logs:
 
 - `docs/forge/ideas/<IDEA_ID>/run_log.md` (append-only)
 - `docs/forge/ideas/<IDEA_ID>/manifest.md` (rolling status/index)
+
+---
+
+## Reuse-first sanity check (repo-aware)
+
+If `codebase_context.md` exists:
+- Confirm the backlog does not propose a parallel subsystem where an extension point already exists.
+- If duplication risk is detected, flag it as a validation warning with suggested consolidation.
+
+If validating tasks and `existing_solution_map.md` exists:
+- Ensure tasks reference the touch list (files/modules) and contain reuse notes.
+- Warn if tasks are generic (“create new service”) without mapping to existing components.
 
 ---
 
@@ -151,6 +175,10 @@ Include content via file references:
 
 - Prior report (only if it exists):
   @docs/forge/ideas/<IDEA_ID>/latest/validators/feature_validation_report.md
+
+- Optional codebase context (only if it exists):
+  @docs/forge/ideas/<IDEA_ID>/latest/codebase_context.md
+
 
 ---
 

@@ -42,6 +42,18 @@ Inputs:
 - `docs/forge/ideas/<IDEA_ID>/inputs/idea.md` (required baseline input)
 - `docs/forge/ideas/<IDEA_ID>/inputs/feature_config.md` (optional)
 
+### Optional codebase anchor (recommended)
+
+If it exists, use `codebase_context.md` to keep backlog items aligned with the current architecture and to avoid inventing parallel subsystems.
+
+- `docs/forge/ideas/<IDEA_ID>/latest/codebase_context.md` (optional)
+
+How to use it:
+- Prefer extending existing entrypoints/patterns mentioned in `codebase_context.md`
+- Avoid proposing new top-level modules if `codebase_context.md` indicates extension points
+- If `codebase_context.md` conflicts with the idea docs, record the conflict as an Open Question (do not guess)
+
+
 Upstream artifacts (preferred if present):
 
 - `docs/forge/ideas/<IDEA_ID>/latest/idea_normalized.md` (optional)
@@ -132,6 +144,10 @@ Include the content via file references:
 
 - Optional config (only if it exists):
   @docs/forge/ideas/<IDEA_ID>/inputs/feature_config.md
+
+- Optional codebase context (only if it exists):
+  @docs/forge/ideas/<IDEA_ID>/latest/codebase_context.md
+
 
 ---
 

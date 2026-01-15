@@ -66,6 +66,18 @@ Per-idea logs:
 
 ---
 
+### Reuse-first sanity check (repo-aware)
+
+If `codebase_context.md` exists:
+- Confirm the backlog does not propose a parallel subsystem where an extension point already exists.
+- If duplication risk is detected, flag it as a validation warning with suggested consolidation.
+
+If validating tasks and `existing_solution_map.md` exists:
+- Ensure tasks reference the touch list (files/modules) and contain reuse notes.
+- Warn if tasks are generic (“create new service”) without mapping to existing components.
+
+---
+
 ## Directory handling
 
 Ensure these directories exist (create them if missing):
