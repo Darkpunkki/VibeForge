@@ -60,6 +60,7 @@ Upstream artifacts (preferred if present):
 - `docs/forge/ideas/<IDEA_ID>/latest/concept_summary.md` (required)
 - `docs/forge/ideas/<IDEA_ID>/latest/epics_backlog.md` (preferred; required if present)
 - `docs/forge/ideas/<IDEA_ID>/latest/epics.md` (fallback only if epics_backlog is missing)
+- `docs/forge/ideas/<IDEA_ID>/latest/PROJECT_ARCHITECTURE.md` (optional; provides folder structure context)
 
 Outputs:
 
@@ -147,6 +148,21 @@ Include the content via file references:
 
 - Optional codebase context (only if it exists):
   @docs/forge/ideas/<IDEA_ID>/latest/codebase_context.md
+
+- Optional project architecture (only if it exists - read Quick Reference section only):
+  @docs/forge/ideas/<IDEA_ID>/latest/PROJECT_ARCHITECTURE.md
+
+### Using PROJECT_ARCHITECTURE.md (if present)
+
+If `latest/PROJECT_ARCHITECTURE.md` exists:
+1. Read ONLY the **Quick Reference** section (first ~50-100 lines until the `---` separator)
+2. Use it to:
+   - Map features to correct folders in the structure
+   - Reference existing abstractions instead of proposing duplicates
+   - Ensure feature descriptions mention specific file paths when relevant
+3. Do NOT read the full architecture document (it's ~1000 lines)
+
+Example: If EPIC-001 maps to `src/core/`, features should reference files like `src/core/base_collector.py`
 
 
 ---

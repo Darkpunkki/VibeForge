@@ -48,6 +48,7 @@ Optional upstream reference:
 - `docs/forge/ideas/<IDEA_ID>/latest/idea_normalized.md` (optional)
 - `docs/forge/ideas/<IDEA_ID>/latest/epics_backlog.md` (optional reference only; do not rewrite; fallback to epics.md if backlog missing)
 - `docs/forge/ideas/<IDEA_ID>/latest/epics.md` (fallback only if epics_backlog is missing)
+- `docs/forge/ideas/<IDEA_ID>/latest/PROJECT_ARCHITECTURE.md` (optional; provides folder structure - read Quick Reference section only)
 
 Required upstream artifacts:
 
@@ -155,7 +156,20 @@ Include the content via file references:
 
 - Existing solution map (required):
   @docs/forge/ideas/<IDEA_ID>/latest/existing_solution_map.md
-  
+
+- Optional project architecture (only if it exists - read Quick Reference section only):
+  @docs/forge/ideas/<IDEA_ID>/latest/PROJECT_ARCHITECTURE.md
+
+### Using PROJECT_ARCHITECTURE.md (if present)
+
+If `latest/PROJECT_ARCHITECTURE.md` exists:
+1. Read ONLY the **Quick Reference** section (first ~50-100 lines until the `---` separator)
+2. Use it to:
+   - Specify exact file paths in task descriptions (e.g., "Implement BaseCollector in `src/core/base_collector.py`")
+   - Reference existing abstractions instead of proposing new ones
+   - Ensure tasks are scoped to the correct folders
+3. Do NOT read the full architecture document (it's ~1000 lines)
+
 
 ---
 

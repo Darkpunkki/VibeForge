@@ -51,6 +51,49 @@ Write to:
 
 This document should include:
 
+#### Quick Reference (First Section - 50-100 lines)
+
+A concise overview for downstream prompts to use without loading the full 1000-line document.
+
+Include:
+
+**1. Folder Structure (Collapsed)**
+```
+project-root/
+├── src/
+│   ├── core/          # EPIC-001: Shared infrastructure
+│   ├── modes/         # Mode-specific implementations
+│   └── cli/           # EPIC-004: CLI
+├── tests/
+└── config/
+```
+
+**2. Epic → Code Mapping Table**
+```
+| Epic ID | Epic Name | Location | Key Files |
+|---------|-----------|----------|-----------|
+| EPIC-001 | Core Infrastructure | src/core/ | base_*.py, models.py |
+| EPIC-002 | Job Search Mode | src/modes/job_search/ | processor.py, ranker.py |
+```
+
+**3. Key Abstractions**
+```
+- BaseCollector (src/core/base_collector.py) - Abstract collector interface
+- BaseProcessor (src/core/base_processor.py) - LLM processing base
+- BaseRanker (src/core/base_ranker.py) - Ranking logic base
+```
+
+**End Quick Reference with:**
+```markdown
+---
+
+## Full Architecture Details
+
+The sections below provide complete implementation guidance...
+```
+
+---
+
 #### Section A: Technology Stack Summary
 - Language/runtime
 - Key frameworks/libraries
