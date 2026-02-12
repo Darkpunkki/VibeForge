@@ -1,5 +1,5 @@
 ---
-name: Codebase context
+name: codebase-context
 description: Create a lightweight codebase_context.md that anchors the idea in the existing repo (modules, constraints, extension points). Generic framework prompt.
 argument-hint: "<IDEA_ID>   (example: IDEA-0003_my-idea)"
 disable-model-invocation: true

@@ -1,5 +1,5 @@
 ---
-name: Validate features
+name: validate-features
 description: Validate features_backlog.md for an idea against concept_summary.md and epics_backlog.md (writes report to ideas/<IDEA_ID>/runs and updates ideas/<IDEA_ID>/latest; optional patch if allowed)
 argument-hint: "<IDEA_ID>   (example: IDEA-0003_my-idea)"
 disable-model-invocation: true

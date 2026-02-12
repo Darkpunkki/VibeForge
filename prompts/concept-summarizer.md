@@ -1,5 +1,5 @@
 ---
-name: Summarize
+name: summarize
 description: Create concept_summary.md as the invariant semantic anchor for an idea (writes to ideas/<IDEA_ID>/runs and updates ideas/<IDEA_ID>/latest)
 argument-hint: "<IDEA_ID>   (example: IDEA-0003_some-idea)"
 disable-model-invocation: true

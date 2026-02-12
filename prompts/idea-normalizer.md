@@ -1,5 +1,5 @@
 ---
-name: Normalize idea
+name: normalize-idea
 description: Normalize an idea into a consistent structure (writes to ideas/<IDEA_ID>/runs and updates ideas/<IDEA_ID>/latest). If Open Questions exist, ask the user and finalize with captured answers.
 argument-hint: "<IDEA_ID>   (example: IDEA-0002_controller-tool)"
 disable-model-invocation: true
