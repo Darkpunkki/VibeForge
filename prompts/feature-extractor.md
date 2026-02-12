@@ -126,31 +126,23 @@ If the idea docs contradict the concept summary or epics, prefer `concept_summar
 
 ---
 
-## Context (include file contents)
+## Context (loading sequence)
 
-Include the content via file references:
+Load files in this order, handling missing optional files gracefully:
 
-- Concept summary (required):
-  @docs/forge/ideas/<IDEA_ID>/latest/concept_summary.md
+### Required files (read first)
+1. Read `latest.concept_summary` using vf.read
+2. Try to read `latest.epics_backlog` using vf.read
+   - If missing, read `latest.epics` instead
+3. Read `inputs.idea` using vf.read
 
-- Epics (preferred; fallback to epics.md if backlog missing):
-  @docs/forge/ideas/<IDEA_ID>/latest/epics_backlog.md
-  @docs/forge/ideas/<IDEA_ID>/latest/epics.md
+### Optional context (read if useful)
+4. Optionally read `latest.idea_normalized` if you need additional context beyond inputs.idea
+5. Optionally read `inputs.feature_config` for customization rules (feature limits, AC style, tag presets)
+6. Optionally read `latest.codebase_context` to avoid proposing parallel subsystems
+7. Optionally read `latest.PROJECT_ARCHITECTURE` (Quick Reference only) to map features to correct folder structure
 
-- Preferred normalized idea (only if it exists):
-  @docs/forge/ideas/<IDEA_ID>/latest/idea_normalized.md
-
-- Baseline raw idea (always):
-  @docs/forge/ideas/<IDEA_ID>/inputs/idea.md
-
-- Optional config (only if it exists):
-  @docs/forge/ideas/<IDEA_ID>/inputs/feature_config.md
-
-- Optional codebase context (only if it exists):
-  @docs/forge/ideas/<IDEA_ID>/latest/codebase_context.md
-
-- Optional project architecture (only if it exists - read Quick Reference section only):
-  @docs/forge/ideas/<IDEA_ID>/latest/PROJECT_ARCHITECTURE.md
+**Important:** Use vf.read with kind notation (e.g., `"latest.concept_summary"`, not file paths). Handle ENOENT errors gracefully for optional files.
 
 ### Using PROJECT_ARCHITECTURE.md (if present)
 
@@ -292,8 +284,8 @@ A feature:
 
 - **IMPORTANT:** Claude has a 32,000 output token limit.
 - For projects with 6+ epics: aim for 1-5 concise features per epic based on complexity
-- Keep descriptions to 2-4 sentences (not 2-6)
-- Keep acceptance criteria to 3-5 bullets (not 3-7)
+- Keep descriptions to 2-4 sentences
+- Keep acceptance criteria to 3-5 bullets
 - If you estimate output will exceed limits, prioritize MVP epics first and note remaining epics in run_log
 
 ---

@@ -139,33 +139,27 @@ If the idea docs contradict the concept summary/features, prefer `concept_summar
 
 ---
 
-## Context (include file contents)
+## Context (loading sequence)
 
-Include the content via file references:
+Load files in this order, handling missing optional files gracefully:
 
-- Concept summary (required):
-  @docs/forge/ideas/<IDEA_ID>/latest/concept_summary.md
+### Required files (read first)
+1. Read `latest.concept_summary` using vf.read
+2. Try to read `latest.features_backlog` using vf.read
+   - If missing, read `latest.features` instead
+3. Read `inputs.idea` using vf.read
 
-- Features (preferred; fallback to features.md if backlog missing):
-  @docs/forge/ideas/<IDEA_ID>/latest/features_backlog.md
-  @docs/forge/ideas/<IDEA_ID>/latest/features.md
+### Codebase grounding (required - read one)
+4. Try to read `latest.existing_solution_map` using vf.read
+   - If missing, read `latest.PROJECT_ARCHITECTURE` instead (Quick Reference section only)
+   - If both missing: STOP and instruct user to run scaffold-project or existing-solution-map
 
-- Optional epics reference (only if it exists):
-  @docs/forge/ideas/<IDEA_ID>/latest/epics_backlog.md
-  @docs/forge/ideas/<IDEA_ID>/latest/epics.md
+### Optional context (read if useful)
+5. Optionally read `latest.idea_normalized` if you need additional context beyond inputs.idea
+6. Optionally read `inputs.task_config` for customization rules (sizing, DoD, etc.)
+7. Optionally read `latest.epics_backlog` (or fallback `latest.epics`) if you need to verify epic titles/boundaries
 
-- Preferred normalized idea (only if it exists):
-  @docs/forge/ideas/<IDEA_ID>/latest/idea_normalized.md
-
-- Baseline raw idea (always):
-  @docs/forge/ideas/<IDEA_ID>/inputs/idea.md
-
-- Optional config (only if it exists):
-  @docs/forge/ideas/<IDEA_ID>/inputs/task_config.md
-
-- Codebase grounding (preferred: existing_solution_map; fallback: PROJECT_ARCHITECTURE):
-  @docs/forge/ideas/<IDEA_ID>/latest/existing_solution_map.md (preferred - discovered code)
-  @docs/forge/ideas/<IDEA_ID>/latest/PROJECT_ARCHITECTURE.md (fallback - planned architecture; read Quick Reference only)
+**Important:** Use vf.read with kind notation (e.g., `"latest.concept_summary"`, not file paths with .md). Handle ENOENT errors gracefully for optional files.
 
 ### Using codebase grounding sources
 

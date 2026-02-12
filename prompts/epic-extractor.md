@@ -117,24 +117,20 @@ If the idea docs contradict the concept summary, prefer the concept summary and 
 
 ---
 
-## Context (include file contents)
+## Context (loading sequence)
 
-Include the content via file references:
+Load files in this order, handling missing optional files gracefully:
 
-- Concept summary (required):
-  @docs/forge/ideas/<IDEA_ID>/latest/concept_summary.md
+### Required files (read first)
+1. Read `latest.concept_summary` using vf.read
+2. Read `inputs.idea` using vf.read
 
-- Preferred normalized idea (only if it exists):
-  @docs/forge/ideas/<IDEA_ID>/latest/idea_normalized.md
+### Optional context (read if useful)
+3. Optionally read `latest.idea_normalized` if you need additional context beyond inputs.idea
+4. Optionally read `inputs.epic_config` for customization rules (epic limits, release targeting preferences)
+5. Optionally read `latest.codebase_context` to keep epics aligned with current architecture
 
-- Baseline raw idea (always):
-  @docs/forge/ideas/<IDEA_ID>/inputs/idea.md
-
-- Optional config (only if it exists):
-  @docs/forge/ideas/<IDEA_ID>/inputs/epic_config.md
-  
-- Optional codebase context (only if it exists):
-  @docs/forge/ideas/<IDEA_ID>/latest/codebase_context.md
+**Important:** Use vf.read with kind notation (e.g., `"latest.concept_summary"`, not file paths). Handle ENOENT errors gracefully for optional files.
 
 ---
 
