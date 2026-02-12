@@ -98,14 +98,23 @@ This stage produces **no code**. It produces backlog tasks only.
 
 ## Inputs (how to choose sources)
 
-### Existing Solution Map (required for repo-grounded tasks)
+### Codebase Grounding (existing code vs. planned architecture)
 
-Tasks MUST be grounded in the existing codebase to avoid duplicate/overlapping implementations.
+Tasks must reference actual file paths and avoid proposing duplicate implementations.
 
-- Required: `docs/forge/ideas/<IDEA_ID>/latest/existing_solution_map.md`
+**Preferred source (existing projects):**
+- `docs/forge/ideas/<IDEA_ID>/latest/existing_solution_map.md` (discovered codebase structure)
 
-If `existing_solution_map.md` is missing:
-- STOP and instruct the user to run `/existing-solution-map <IDEA_ID>` (optionally scoped to the epic) before generating tasks.
+**Fallback source (fresh projects):**
+- `docs/forge/ideas/<IDEA_ID>/latest/PROJECT_ARCHITECTURE.md` (planned architecture from scaffold-project)
+
+**If both are missing:**
+- STOP and instruct: "Run either `/scaffold-project <IDEA_ID>` (for fresh projects) or `/existing-solution-map <IDEA_ID>` (for existing codebases) before generating tasks."
+
+**When using PROJECT_ARCHITECTURE.md as fallback:**
+- Add a warning in run_log.md: "Tasks generated from planned architecture (PROJECT_ARCHITECTURE.md), not discovered code. File paths are planned, not confirmed to exist."
+- Read ONLY the Quick Reference section (first ~50-100 lines)
+- Use planned paths and abstractions from the architecture document
 
 
 You MUST read inputs in this order:
@@ -154,15 +163,17 @@ Include the content via file references:
 - Optional config (only if it exists):
   @docs/forge/ideas/<IDEA_ID>/inputs/task_config.md
 
-- Existing solution map (required):
-  @docs/forge/ideas/<IDEA_ID>/latest/existing_solution_map.md
+- Codebase grounding (preferred: existing_solution_map; fallback: PROJECT_ARCHITECTURE):
+  @docs/forge/ideas/<IDEA_ID>/latest/existing_solution_map.md (preferred - discovered code)
+  @docs/forge/ideas/<IDEA_ID>/latest/PROJECT_ARCHITECTURE.md (fallback - planned architecture; read Quick Reference only)
 
-- Optional project architecture (only if it exists - read Quick Reference section only):
-  @docs/forge/ideas/<IDEA_ID>/latest/PROJECT_ARCHITECTURE.md
+### Using codebase grounding sources
 
-### Using PROJECT_ARCHITECTURE.md (if present)
+**If existing_solution_map.md exists (preferred):**
+- Use it as the primary source for file paths, existing components, and reuse notes
+- Tasks should reference actual discovered files and patterns
 
-If `latest/PROJECT_ARCHITECTURE.md` exists:
+**Else if PROJECT_ARCHITECTURE.md exists (fallback for fresh projects):**
 1. Read ONLY the **Quick Reference** section (first ~50-100 lines until the `---` separator)
 2. Use it to:
    - Specify exact file paths in task descriptions (e.g., "Implement BaseCollector in `src/core/base_collector.py`")
@@ -243,9 +254,9 @@ Tasks may be technical (routes, persistence, UI components) because this stage i
   - Tests/verification
   - Documentation updates (only where meaningful)
 - For every task, include:
-  - Target files/modules to change (from the solution map touch list), and
+  - Target files/modules to change (from existing_solution_map touch list OR PROJECT_ARCHITECTURE.md Quick Reference), and
   - Reuse notes (what existing component/pattern is extended; what must NOT be duplicated)
-- Prefer “extend/modify existing component” tasks over “create new subsystem” tasks unless the solution map explicitly lists a gap.
+- Prefer "extend/modify existing component" tasks over "create new subsystem" tasks unless explicitly needed.
 
 
 ### You MUST NOT
