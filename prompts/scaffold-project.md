@@ -36,7 +36,7 @@ Read these files from `docs/forge/ideas/<IDEA_ID>/`:
 
 1. **latest/idea_normalized.md** — Core requirements and constraints
 2. **latest/concept_summary.md** — Semantic anchor and key themes
-3. **latest/epics.md** — Validated epic structure
+3. **latest/epics_backlog.md** (preferred) or **latest/epics.md** (fallback) — Validated epic structure
 4. **Optional:** Any `inputs/*_config.md` files for architecture preferences
 
 ---
@@ -142,7 +142,19 @@ python -m src.cli.app --help
 
 ### Step 1: Load Context
 
-Read the required input files and extract:
+Read the required input files:
+- `latest/idea_normalized.md`
+- `latest/concept_summary.md`
+- `latest/epics_backlog.md` (preferred) or `latest/epics.md` (fallback)
+
+If neither epics file exists, STOP and report:
+```
+Error: Cannot scaffold project without epics.
+Please run /vf:extract-epics first.
+Expected: latest/epics_backlog.md or latest/epics.md
+```
+
+Extract from the files:
 - Technology choices (language, frameworks)
 - Epic structure and descriptions
 - Architectural hints from the idea/concept
@@ -214,7 +226,7 @@ Update `manifest.md` with:
 - Inputs:
   - latest/idea_normalized.md
   - latest/concept_summary.md
-  - latest/epics.md
+  - latest/epics_backlog.md (or epics.md fallback)
 - Outputs:
   - latest/PROJECT_ARCHITECTURE.md
   - runs/<RUN_ID>/PROJECT_ARCHITECTURE.md
