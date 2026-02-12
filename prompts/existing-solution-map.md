@@ -1,9 +1,8 @@
 ---
-name: Existing solution map
-description: Produce existing_solution_map.md (deep, actionable reuse map) to ground task generation in the current repo. Generic framework prompt.
-argument-hint: "<IDEA_ID> [--epic EPIC-00X]   (example: IDEA-0003_my-idea --epic EPIC-002)"
-disable-model-invocation: true
+description: Produce existing_solution_map.md to ground task generation in the current repo.
+argument-hint: "<IDEA_ID> [--epic EPIC-00X]"
 ---
+
 
 # Existing Solution Map — Agent Instructions
 

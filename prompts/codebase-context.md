@@ -40,6 +40,7 @@ Idea root:
 
 Inputs (required):
 - `docs/forge/ideas/<IDEA_ID>/latest/concept_summary.md`
+- `docs/forge/ideas/<IDEA_ID>/inputs/concept_summary_config.md`
 Fallback/optional:
 - `docs/forge/ideas/<IDEA_ID>/latest/idea_normalized.md`
 - `docs/forge/ideas/<IDEA_ID>/inputs/idea.md`
