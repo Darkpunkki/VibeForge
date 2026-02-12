@@ -43,6 +43,7 @@ Before using any idea-scoped paths:
 
 ### Optional context (read-only, if present)
 
+- `docs/forge/ideas/<IDEA_ID>/latest/PROJECT_ARCHITECTURE.md` (Quick Reference section - for understanding project structure)
 - `docs/forge/ideas/<IDEA_ID>/latest/features_backlog.md` (preferred; fallback to features.md if backlog missing)
 - `docs/forge/ideas/<IDEA_ID>/latest/features.md` (fallback if backlog missing)
 - `docs/forge/ideas/<IDEA_ID>/latest/epics_backlog.md` (preferred; fallback to epics.md if backlog missing)
@@ -50,6 +51,12 @@ Before using any idea-scoped paths:
 - `docs/forge/ideas/<IDEA_ID>/latest/concept_summary.md`
 - `docs/forge/ideas/<IDEA_ID>/latest/idea_normalized.md`
 - `docs/forge/ideas/<IDEA_ID>/inputs/idea.md`
+
+**Using PROJECT_ARCHITECTURE.md:**
+- Read ONLY the Quick Reference section (first ~50-100 lines until `---`)
+- Use it to understand folder structure, base abstractions, and module organization
+- Reference existing files/classes instead of creating duplicates
+- Ensure code follows the designed architecture
 
 ### Progress tracking (per-idea)
 
@@ -208,6 +215,7 @@ The Plan Doc must reference TASK ids exactly (IDs unchanged).
 
 - Title
 - Description
+- Files (target files to create/modify - use these paths when implementing)
 - Acceptance criteria
 - Dependencies (if present)
 - Release target, priority, estimate, tags (if present)
@@ -236,8 +244,11 @@ For each task in the ordered queue:
 ### 6.1 — Preparation
 
 - Identify relevant context:
+  - **File paths from task's `files` field** - these are the target files to create/modify
+  - **PROJECT_ARCHITECTURE.md Quick Reference** - understand module structure and existing abstractions
   - feature/epic context (if `features_backlog.md`/`epics_backlog.md` exist; fallback to `features.md`/`epics.md` if backlog missing)
   - concept constraints/invariants (if `concept_summary.md` exists)
+- **Before creating new files/classes:** Check PROJECT_ARCHITECTURE.md Quick Reference for existing abstractions to extend
 - Only update documentation if the change introduces NEW decisions or changes existing intent.
 
 ### 6.2 — Implement

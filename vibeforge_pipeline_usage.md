@@ -173,6 +173,9 @@ Examples:
 - Never modifies `tasks.md`.
 - Never queues a task already referenced by any WP (any status).
 - Stops if there are already **4+ queued** WPs.
+- **NEW:** Groups tasks by file paths - tasks touching the same files are batched into the same WP
+- **NEW:** Uses PROJECT_ARCHITECTURE.md Quick Reference for module-based grouping
+- **Prevents:** Multiple WPs modifying the same file (reduces conflicts and rework)
 
 ### B) Execute a Work Package
 Use `/work-wp` to select and execute work using WPs as the driver.
@@ -232,8 +235,9 @@ Examples:
 - Updates manifest + run log
 
 6) `/task-builder <IDEA_ID>`
-- Reads: `latest/concept_summary.md` + `latest/features.md` + `latest/PROJECT_ARCHITECTURE.md` (if exists) + idea context
+- Reads: `latest/concept_summary.md` + `latest/features.md` + `latest/PROJECT_ARCHITECTURE.md` (Quick Reference) + idea context
 - Writes: `runs/<RUN_ID>/tasks.md` and updates `latest/tasks.md`
+- **NEW:** Tasks include `files` field listing target file paths from architecture
 - Updates manifest + run log
 
 ### Validators (idea-scoped; write under latest/validators/)

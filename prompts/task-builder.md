@@ -329,6 +329,9 @@ tasks:
     epic_id: "EPIC-001"
     title: "<specific task title>"
     description: "<2–6 sentences describing what to implement>"
+    files:
+      - "src/core/base_collector.py"
+      - "tests/test_base_collector.py"
     acceptance_criteria:
       - "<testable bullet>"
       - "<testable bullet>"
@@ -340,12 +343,15 @@ tasks:
     tags: ["backend", "qa"]
 ```
 
+**Note:** The `files` field lists target files this task will create/modify. Use paths from PROJECT_ARCHITECTURE.md Quick Reference when available.
+
 Constraints:
 
-- Every task includes: `id`, `feature_id`, `epic_id`, `title`, `description`, `acceptance_criteria`, `release_target`, `priority`, `estimate`, `tags`.
+- Every task includes: `id`, `feature_id`, `epic_id`, `title`, `description`, `files`, `acceptance_criteria`, `release_target`, `priority`, `estimate`, `tags`.
 - IDs stable and sequential: `TASK-001`, `TASK-002`, ...
 - `feature_id` must match a feature in `features_backlog.md` (or fallback `features.md`).
 - `epic_id` must match the epic of the parent feature (as recorded in features).
+- `files`: List of file paths this task will create/modify (from PROJECT_ARCHITECTURE.md if available, otherwise best estimate).
 
 Markdown rendering (required):
 
@@ -357,7 +363,8 @@ Markdown rendering (required):
 
 #### TASK-001: <Task Title>
 
-**Release Target:** <...> **Priority:** <...> **Estimate:** <...>  
+**Files:** `src/core/base_collector.py`, `tests/test_base_collector.py`
+**Release Target:** <...> **Priority:** <...> **Estimate:** <...>
 **Description:** <...>
 
 **Acceptance Criteria:**

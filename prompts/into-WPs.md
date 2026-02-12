@@ -69,13 +69,14 @@ Idea backlog (canonical):
 
 ## Optional Inputs (Auto if present)
 
-For better titles/context (do not derive tasks from these):
+For better titles/context and file-based grouping:
 
 - `docs/forge/ideas/<IDEA_ID>/latest/features_backlog.md` (preferred; fallback to features.md if backlog missing)
 - `docs/forge/ideas/<IDEA_ID>/latest/features.md` (fallback if backlog missing)
 - `docs/forge/ideas/<IDEA_ID>/latest/epics_backlog.md` (preferred; fallback to epics.md if backlog missing)
 - `docs/forge/ideas/<IDEA_ID>/latest/epics.md` (fallback if backlog missing)
 - `docs/forge/ideas/<IDEA_ID>/latest/concept_summary.md`
+- `docs/forge/ideas/<IDEA_ID>/latest/PROJECT_ARCHITECTURE.md` (Quick Reference section only - for understanding file/module structure)
 
 ---
 
@@ -131,6 +132,7 @@ If the file does not exist, treat as empty and create it with a minimal header:
 - `epic_id` (EPIC-003)
 - `title`
 - `description`
+- `files` (list of file paths this task touches - IMPORTANT for grouping)
 - `release_target` (MVP/V1/Full/Later)
 - `priority` (P0/P1/P2)
 - `estimate` (S/M/L)
@@ -184,12 +186,28 @@ Default WP sizing targets:
 
 Batching heuristics (priority order):
 
-1) Keep WPs within the same `feature_id` when possible.
-2) If a feature is too large, allow spanning within the same `epic_id`, but keep it tight.
-3) Prefer related tasks only if they share the same epic/feature (IDs alone are not a guarantee).
-4) Avoid mixing unrelated tags (e.g., deep infra + UI polish) unless tasks are explicitly coupled.
-5) Stop early if you hit a task that clearly depends on missing prerequisites.
-6) If uncertain, create smaller WPs.
+1) **File-based grouping (HIGHEST PRIORITY):**
+   - Tasks that touch the same file(s) should be in the same WP or consecutive WPs
+   - Parse the `files` field from each task
+   - Group tasks with overlapping file paths together
+   - Example: If TASK-001 and TASK-005 both modify `src/core/base_collector.py`, put them in the same WP
+   - This prevents multiple WPs modifying the same file and creating conflicts
+
+2) **Module/folder grouping:**
+   - Tasks in the same module/folder (e.g., all in `src/core/`) should be grouped when possible
+   - Use PROJECT_ARCHITECTURE.md Quick Reference to understand module boundaries
+
+3) Keep WPs within the same `feature_id` when possible.
+
+4) If a feature is too large, allow spanning within the same `epic_id`, but keep it tight.
+
+5) Prefer related tasks only if they share the same epic/feature (IDs alone are not a guarantee).
+
+6) Avoid mixing unrelated tags (e.g., deep infra + UI polish) unless tasks are explicitly coupled.
+
+7) Stop early if you hit a task that clearly depends on missing prerequisites.
+
+8) If uncertain, create smaller WPs.
 
 When a count `N` is provided:
 
