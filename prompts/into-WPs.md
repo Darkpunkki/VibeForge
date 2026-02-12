@@ -72,26 +72,29 @@ Before using any paths, resolve the idea folder:
 
 ---
 
-## Inputs (Auto)
+## Context (loading sequence)
 
-Per-idea WP board (target):
+Load files in this order, handling missing optional files gracefully:
 
-- `docs/forge/ideas/<IDEA_ID>/latest/work_packages.md` (create if missing)
+### Required files (read first)
+1. Read `latest.tasks` using vf.read (required - STOP if missing)
 
-Idea backlog (canonical):
+### Work packages board (read or create)
+2. Try to read `latest.work_packages` using vf.read
+   - If missing (ENOENT), treat as empty and you'll create it later
+   - Parse existing WP IDs, statuses, and task references if it exists
 
-- `docs/forge/ideas/<IDEA_ID>/latest/tasks.md` (required)
+### Optional context for better WP titles and grouping
+3. Optionally try to read `latest.features_backlog` (preferred) or `latest.features` (fallback)
+   - Use for feature titles in WP names
+   - If both missing, derive titles from task data
+4. Optionally try to read `latest.epics_backlog` (preferred) or `latest.epics` (fallback)
+   - Use for epic titles in WP names
+   - If both missing, derive titles from task data
+5. Optionally read `latest.PROJECT_ARCHITECTURE` (Quick Reference only) for file/module grouping context
+6. Optionally read `latest.concept_summary` for additional context
 
-## Optional Inputs (Auto if present)
-
-For better titles/context and file-based grouping:
-
-- `docs/forge/ideas/<IDEA_ID>/latest/features_backlog.md` (preferred; fallback to features.md if backlog missing)
-- `docs/forge/ideas/<IDEA_ID>/latest/features.md` (fallback if backlog missing)
-- `docs/forge/ideas/<IDEA_ID>/latest/epics_backlog.md` (preferred; fallback to epics.md if backlog missing)
-- `docs/forge/ideas/<IDEA_ID>/latest/epics.md` (fallback if backlog missing)
-- `docs/forge/ideas/<IDEA_ID>/latest/concept_summary.md`
-- `docs/forge/ideas/<IDEA_ID>/latest/PROJECT_ARCHITECTURE.md` (Quick Reference section only - for understanding file/module structure)
+**Important:** Use vf.read with kind notation (e.g., `"latest.tasks"`, not file paths). Handle ENOENT errors gracefully for optional files - if they don't exist, continue without them.
 
 ---
 
@@ -107,22 +110,24 @@ If you cannot write to the file directly, output the exact text block(s) that sh
 
 ---
 
-## Step 0 — Read context and compute queue state
+## Step 0 — Parse loaded context and compute queue state
 
-1) Open `docs/forge/ideas/<IDEA_ID>/latest/work_packages.md` and parse existing WPs:
+1) Parse `work_packages.md` content (loaded in Context section):
 
-- WP ids
-- Status (`Queued`, `In Progress`, `Blocked`, `Done`, etc.)
-- Referenced Task IDs (`TASK-###`) if present
-- Any explicit dependencies and verify commands
+If you successfully loaded it:
+- Parse existing WP ids
+- Parse Status (`Queued`, `In Progress`, `Blocked`, `Done`, etc.)
+- Parse Referenced Task IDs (`TASK-###`) if present
+- Parse any explicit dependencies and verify commands
 
-If the file does not exist, treat as empty and create it with a minimal header:
+If loading failed (ENOENT - file doesn't exist):
+- Treat as empty
+- You'll create it later with this minimal header:
+  ```md
+  # Work Packages — <IDEA_ID>
 
-```md
-# Work Packages — <IDEA_ID>
-
-(append new WPs below)
-```
+  (append new WPs below)
+  ```
 
 2) Compute:
 
@@ -141,9 +146,9 @@ If the file does not exist, treat as empty and create it with a minimal header:
 
 ---
 
-## Step 1 — Read and index the backlog (tasks.md)
+## Step 1 — Parse and index the backlog (tasks.md)
 
-1) Open `docs/forge/ideas/<IDEA_ID>/latest/tasks.md`.
+1) Use the `tasks.md` content already loaded in the Context section
 2) Parse the canonical YAML block at the top (preferred). If missing, fall back to parsing the Markdown rendering.
 3) Build an in-memory list of tasks with fields (best-effort):
 
