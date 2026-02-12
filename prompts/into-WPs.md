@@ -330,8 +330,11 @@ Recommended WP entry format:
 Print:
 
 - New WP id(s) and tasks selected
-- Plan Doc path(s)
-- Suggested next step (e.g., “Run your WP planning command for WP-XXXX”)
+- Plan Doc path(s) (to be created)
+- Suggested next steps:
+  - If created multiple WPs: "Run `/plan-wp <IDEA_ID> ALL` to create execution plans for all WPs"
+  - If created 1 WP: "Run `/plan-wp <IDEA_ID> WP-XXXX` to create an execution plan, then `/work-wp <IDEA_ID> WP-XXXX` to execute"
+  - General: "Run `/plan-wp <IDEA_ID> QUEUED` to plan all queued WPs, then `/work-wp <IDEA_ID>` to execute"
 
 ---
 

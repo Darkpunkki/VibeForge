@@ -1,17 +1,22 @@
 ---
 name: execute-wp
-description: Execute a Work Package (WP) from an idea’s latest/work_packages.md (auto-picks next Queued, or runs a specific WP id)
-argument-hint: "<IDEA_ID> [WP-####]   (examples: IDEA-0001-my-idea | IDEA-0001-my-idea WP-0002 | WP-0002)"
+description: Execute a planned Work Package (WP) - requires existing plan doc from /plan-wp
+argument-hint: "<IDEA_ID> [WP-####]   (examples: IDEA-0001-my-idea | IDEA-0001-my-idea WP-0002)"
 disable-model-invocation: true
 ---
 
-# Work Package Execution Assistant (Idea-Scoped, Backlog-Driven)
+# Work Package Execution Assistant (Plan-Based)
 
-Execute development iteratively using **Work Packages (WPs)** as the driver.
+Execute development based on an **existing WP plan document**.
 
-This command must NOT ask for a feature name or plan doc path up front — it must discover the next unit of work automatically from the idea-scoped WP board:
+**Prerequisites:**
+1. WP must exist in `work_packages.md`
+2. Plan doc must exist (created via `/plan-wp`)
+3. WP status must be `Queued` or `In Progress`
 
-- `docs/forge/ideas/<IDEA_ID>/latest/work_packages.md`
+This command discovers work from:
+- `docs/forge/ideas/<IDEA_ID>/latest/work_packages.md` (WP board)
+- `docs/forge/ideas/<IDEA_ID>/planning/<plan-doc>.md` (execution plan)
 
 Supports optional arguments:
 
@@ -37,9 +42,9 @@ Before using any idea-scoped paths:
 
 ### Canonical sources of truth (idea-scoped)
 
-- `docs/forge/ideas/<IDEA_ID>/latest/work_packages.md` (near-term execution queue)
-- `docs/forge/ideas/<IDEA_ID>/planning/` (per-WP plan docs; created if missing)
-- `docs/forge/ideas/<IDEA_ID>/latest/tasks.md` (canonical task definitions; required)
+- `docs/forge/ideas/<IDEA_ID>/latest/work_packages.md` (WP board with plan doc references)
+- `docs/forge/ideas/<IDEA_ID>/planning/<plan-doc>.md` (WP execution plan - MUST exist)
+- `docs/forge/ideas/<IDEA_ID>/latest/tasks.md` (canonical task definitions)
 
 ### Optional context (read-only, if present)
 
@@ -177,34 +182,25 @@ If you cannot write files directly, output the exact edits to apply.
 
 ---
 
-## Step 4 — Ensure WP Plan Doc Exists (or Create It)
+## Step 4 — Load and Verify Plan Doc (Required)
 
-Planning and execution can be performed in one command for simplicity.
+1) Get plan doc path from WP entry:
+   - Look for `Plan Doc:` field in the WP section of work_packages.md
+   - If missing, STOP and report: "WP-XXXX has no plan doc. Run `/plan-wp <IDEA_ID> WP-XXXX` first."
 
-1) Determine the Plan Doc path:
+2) Load the plan doc:
+   - Read the plan doc file using vf.read (pass relative path under idea root)
+   - If file doesn't exist, STOP and report: "Plan doc not found at <path>. Run `/plan-wp <IDEA_ID> WP-XXXX` first."
 
-- Prefer the explicit `Plan Doc:` field in the WP entry.
-- If missing, derive a default under:
-  - `docs/forge/ideas/<IDEA_ID>/planning/WPP-<NEXT>-WP-XXXX_<slug>.md`
-
-2) If the plan doc does not exist, create it.
-
-Plan doc requirements:
-
-- Title: `WP-XXXX — <name>`
-- Goal (from work_packages.md)
-- `Idea-ID: <IDEA_ID>`
-- Task IDs included (explicit list)
-- Ordered execution steps (task order)
-- “Done means…” section with verification commands
-- A checkbox list mirroring the tasks for this WP
-- “Notes / Decisions” section for anything learned mid-execution
-
-The Plan Doc must reference TASK ids exactly (IDs unchanged).
+3) Parse plan doc:
+   - Extract task IDs and their execution order
+   - Extract verification commands
+   - Extract task checklist
+   - Note any special instructions or implementation hints
 
 ---
 
-## Step 5 — Build the Task Queue (Backlog-Driven)
+## Step 5 — Load Task Details from Canonical Backlog
 
 1) Load the canonical backlog:
 
@@ -220,16 +216,17 @@ The Plan Doc must reference TASK ids exactly (IDs unchanged).
 - Dependencies (if present)
 - Release target, priority, estimate, tags (if present)
 
-3) Order the task queue (best-effort):
+3) Order the task queue:
 
-- Respect explicit `dependencies` between tasks.
-- If dependencies are unknown, use the order listed in the WP plan doc (if present).
-- If both exist and conflict, prefer explicit task dependencies and note the conflict in the plan doc.
+- Use the execution order from the plan doc (loaded in Step 4)
+- The plan doc has already considered dependencies and optimal ordering
+- Respect any explicit `dependencies` in tasks.md if they conflict with the plan
+- Note any conflicts in the plan doc's "Notes / Decisions" section
 
-4) If the plan doc has its own checkbox list:
+4) Use the plan doc's checkbox list as your execution tracker:
 
-- Treat it as the local execution checklist for this WP.
-- Keep it consistent with the canonical tasks and update it as you go.
+- Check off tasks as you complete them
+- Update the plan doc after each task completion
 
 If any referenced TASK id cannot be found in `tasks.md`:
 
