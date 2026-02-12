@@ -1,7 +1,7 @@
 ---
 name: build-tasks
 description: Expand features into implementable tasks for an idea (writes to ideas/<IDEA_ID>/runs and updates ideas/<IDEA_ID>/latest)
-argument-hint: "<IDEA_ID>   (example: IDEA-0003_my-idea)"
+argument-hint: "<IDEA_ID> [--epic EPIC-XXX] [--append]   (examples: IDEA-0003_my-idea | IDEA-0003_my-idea --epic EPIC-001 --append)"
 disable-model-invocation: true
 ---
 
@@ -9,15 +9,29 @@ disable-model-invocation: true
 
 ## Invocation
 
-Run this command with an idea folder id:
+Run this command with an idea folder id and optional scope filters:
 
-- `/task-builder <IDEA_ID>`
+- `/task-builder <IDEA_ID>` - Generate tasks for ALL features
+- `/task-builder <IDEA_ID> --epic EPIC-001` - Generate tasks for one epic only
+- `/task-builder <IDEA_ID> --epic EPIC-001 --append` - Append tasks (don't overwrite existing tasks.md)
 
 Where:
 
-- `IDEA_REF = $ARGUMENTS` (must be a single token; no spaces)
+- `IDEA_REF = first token of $ARGUMENTS` (must be a single token; no spaces)
+- Optional `--epic EPIC-XXX` - Limit scope to features belonging to one epic
+- Optional `--append` - Append to existing tasks.md instead of overwriting
 
 If `IDEA_REF` is missing/empty, STOP and ask the user to rerun with an idea id.
+
+**Use case for scoped generation:**
+- Large projects (6+ epics, 20+ features) may exceed Claude's 32K output token limit
+- Run task-builder multiple times with `--epic` and `--append` to build tasks incrementally
+- Example workflow:
+  ```
+  /task-builder IDEA-0002-finder --epic EPIC-001
+  /task-builder IDEA-0002-finder --epic EPIC-002 --append
+  /task-builder IDEA-0002-finder --epic EPIC-003 --append
+  ```
 
 ---
 
@@ -232,9 +246,30 @@ Tasks may be technical (routes, persistence, UI components) because this stage i
 
 ## Scope & Rules
 
+### Handling scope filters (--epic, --append)
+
+**If `--epic EPIC-XXX` is present in $ARGUMENTS:**
+- Parse the epic ID (e.g., `EPIC-001`)
+- Load `features_backlog.md` (or fallback `features.md`)
+- Filter to ONLY features where `epic_id` matches the specified epic
+- Generate tasks for those features only
+- In the run_log.md entry, note: "Scoped to EPIC-XXX"
+
+**If `--append` is present in $ARGUMENTS:**
+- Load existing `latest/tasks.md` if it exists
+- Parse existing task IDs to determine next task number (e.g., if TASK-042 exists, start new tasks at TASK-043)
+- Append new tasks to the YAML `tasks:` list
+- Append new tasks to the Markdown rendering
+- Use mode `append` when writing to `latest/tasks.md` via vf.write
+- In the run_log.md entry, note: "Appended tasks (existing tasks preserved)"
+
+**If neither flag is present:**
+- Generate tasks for ALL features
+- Overwrite existing `latest/tasks.md` completely
+
 ### You MUST
 
-- Produce tasks for every feature in `features_backlog.md` (or fallback `features.md`).
+- Produce tasks for the features in scope (all features, or filtered by --epic if specified).
 - Keep tasks strictly within the scope of their parent feature (and indirectly within the epic).
 - Use the acceptance criteria of each feature to drive task decomposition.
 - Respect Invariants, Constraints, and Exclusions from `concept_summary.md`.
@@ -297,10 +332,22 @@ Tasks may be technical (routes, persistence, UI components) because this stage i
 - If a task depends on another, reference the task id in `dependencies`.
 - Create plumbing tasks early if many tasks depend on them.
 
-6. Don’t overfit implementation
+6. Don't overfit implementation
 
 - Name concrete components only when it improves clarity.
 - Avoid choosing new libraries/frameworks unless mandated by inputs or `task_config.md`.
+
+7. Output size management (important for large projects)
+
+- **CRITICAL:** Claude has a 32,000 output token limit.
+- **Rough estimate:** Each task ~150-250 tokens (YAML + Markdown). 24 features × 4 tasks/feature × 200 tokens/task ≈ 19,200 tokens (within limit).
+- **If you estimate output will exceed ~28,000 tokens:**
+  - STOP and instruct the user: "This project has X features which would generate ~Y tasks, exceeding output limits. Run task-builder multiple times with --epic scope instead."
+  - Suggest: `/task-builder <IDEA_ID> --epic EPIC-001` for first epic, then subsequent runs with `--epic EPIC-XXX --append`
+- **For scoped runs (--epic flag):**
+  - Generate tasks only for features in that epic
+  - Keep descriptions concise (2-4 sentences)
+  - Keep acceptance criteria focused (3-5 bullets)
 
 ---
 
