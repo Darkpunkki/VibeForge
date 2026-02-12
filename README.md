@@ -113,13 +113,14 @@ The prompt will:
 Once your idea is finalized, run these commands in sequence:
 
 ```
-/vf:idea-normalizer (MCP) IDEA-0001-task-app
-/vf:concept-summarizer (MCP) IDEA-0001-task-app
-/vf:epic-extractor (MCP) IDEA-0001-task-app
+/vf:normalize-idea (MCP) IDEA-0001-task-app
+/vf:summarize (MCP) IDEA-0001-task-app
+/vf:extract-epics (MCP) IDEA-0001-task-app
 /vf:validate-epics (MCP) IDEA-0001-task-app
-/vf:feature-extractor (MCP) IDEA-0001-task-app
+/vf:scaffold-project (MCP) IDEA-0001-task-app
+/vf:extract-features (MCP) IDEA-0001-task-app
 /vf:validate-features (MCP) IDEA-0001-task-app
-/vf:task-builder (MCP) IDEA-0001-task-app
+/vf:build-tasks (MCP) IDEA-0001-task-app
 /vf:validate-tasks (MCP) IDEA-0001-task-app
 ```
 
@@ -128,13 +129,13 @@ Once your idea is finalized, run these commands in sequence:
 Queue work packages:
 
 ```
-/vf:into-wps (MCP) IDEA-0001-task-app 3
+/vf:make-wps (MCP) IDEA-0001-task-app 3
 ```
 
 Execute work:
 
 ```
-/vf:work-wp (MCP)
+/vf:execute-wp (MCP)
 ```
 
 ---
@@ -156,6 +157,7 @@ your-project/
                 │   ├── idea_normalized.md
                 │   ├── concept_summary.md
                 │   ├── epics.md                     # Generated epics
+                │   ├── PROJECT_ARCHITECTURE.md      # Project structure design
                 │   ├── features.md                  # Generated features
                 │   └── tasks.md                     # Generated tasks
                 ├── runs/
@@ -171,16 +173,17 @@ your-project/
 | Command | Purpose |
 |---------|---------|
 | `/vf:imagine (MCP)` | Start a new idea or refine existing |
-| `/vf:idea-normalizer (MCP)` | Normalize and structure the idea |
-| `/vf:concept-summarizer (MCP)` | Create semantic anchor summary |
-| `/vf:epic-extractor (MCP)` | Extract high-level epics |
+| `/vf:normalize-idea (MCP)` | Normalize and structure the idea |
+| `/vf:summarize (MCP)` | Create semantic anchor summary |
+| `/vf:extract-epics (MCP)` | Extract high-level epics |
 | `/vf:validate-epics (MCP)` | Validate epic structure |
-| `/vf:feature-extractor (MCP)` | Break epics into features |
+| `/vf:scaffold-project (MCP)` | Design project architecture & folder structure |
+| `/vf:extract-features (MCP)` | Break epics into features |
 | `/vf:validate-features (MCP)` | Validate features |
-| `/vf:task-builder (MCP)` | Generate actionable tasks |
+| `/vf:build-tasks (MCP)` | Generate actionable tasks |
 | `/vf:validate-tasks (MCP)` | Validate task structure |
-| `/vf:into-wps (MCP)` | Queue work packages |
-| `/vf:work-wp (MCP)` | Execute a work package |
+| `/vf:make-wps (MCP)` | Queue work packages |
+| `/vf:execute-wp (MCP)` | Execute a work package |
 
 ---
 
