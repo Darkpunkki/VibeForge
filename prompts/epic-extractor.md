@@ -195,6 +195,10 @@ Epics describe **what outcome exists when the epic is done**, not how it is impl
 ### You MUST
 
 - Produce **2–12 epics**, based on idea complexity, that collectively cover the system described in `concept_summary.md`.
+  - **Simple projects:** 2-4 epics
+  - **Moderate projects:** 4-8 epics
+  - **Complex projects:** 8-12 epics
+  - Avoid creating epics just to reach a count - match to actual system boundaries
 - Keep epics **distinct** and **minimally overlapping**.
 - Use **Invariants**, **Constraints**, and **Exclusions** from `concept_summary.md` as hard guardrails.
 - Assign each epic:
@@ -230,11 +234,12 @@ Epics describe **what outcome exists when the epic is done**, not how it is impl
 - Architecture responsibilities (not layers): orchestration, runtime/simulation, adapter layer, documentation outputs
 - Artifact ownership: who produces/stores which canonical artifacts
 
-4) Merge/split until “just right”
+4) Merge/split until "just right"
 
 - Too broad → split by responsibility boundary or workflow phase.
 - Overlap → move scope bullets so each responsibility belongs to exactly one epic.
-- <6 epics → likely under-modeled; >12 → likely over-split; merge adjacent responsibilities.
+- <3 epics → likely under-modeled unless truly simple; >12 → likely over-split; merge adjacent responsibilities.
+- **Avoid forcing epic count** - let natural system boundaries dictate the structure.
 
 5) Map epics to releases
 

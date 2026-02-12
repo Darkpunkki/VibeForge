@@ -277,8 +277,11 @@ A feature:
 
 - Too broad → split by responsibility/workflow step.
 - Too similar → merge or adjust scope to remove overlap.
-- Typical target: 2–10 features per epic, depending on complexity (unless `feature_config.md` says otherwise).
-- **For large projects (6+ epics):** Be concise in descriptions and acceptance criteria to stay within output token limits. Aim for 3-5 features per epic rather than 8-10.
+- **Typical target: 1–5 features per epic, depending on complexity** (unless `feature_config.md` says otherwise).
+  - Simple epics (single responsibility): 1-2 features
+  - Moderate epics: 2-4 features
+  - Complex epics (multiple subsystems): 3-5 features
+- **For large projects (6+ epics):** Be concise to stay within output token limits.
 
 7. Sanity check coverage
 
@@ -288,7 +291,7 @@ A feature:
 8. Output size management
 
 - **IMPORTANT:** Claude has a 32,000 output token limit.
-- For projects with 6+ epics: aim for 3-5 concise features per epic
+- For projects with 6+ epics: aim for 1-5 concise features per epic based on complexity
 - Keep descriptions to 2-4 sentences (not 2-6)
 - Keep acceptance criteria to 3-5 bullets (not 3-7)
 - If you estimate output will exceed limits, prioritize MVP epics first and note remaining epics in run_log

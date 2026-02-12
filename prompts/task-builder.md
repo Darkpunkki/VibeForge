@@ -263,6 +263,8 @@ Tasks may be technical (routes, persistence, UI components) because this stage i
 
 - For each feature, read outcome, description, acceptance criteria.
 - Convert each acceptance criterion into one or more concrete tasks.
+- **Flexibility:** Simple features may need only 1-2 tasks; complex features may need 3-8 tasks.
+- Avoid creating artificial tasks just to reach a count - match complexity to actual work needed.
 
 2. Decompose by layers (when appropriate)
 
@@ -271,12 +273,13 @@ Tasks may be technical (routes, persistence, UI components) because this stage i
 - Frontend UI behavior
 - Validation / error handling
 - Tests (unit/integration) or verification scripts
-- Documentation updates
+- Documentation updates (only if meaningful, not boilerplate)
 
 3. Make tasks small and shippable
 
-- Target 1–2 days per task.
+- Target 1–2 days per task (some simple tasks may be <1 day, that's fine).
 - If too big, split by workflow step, component boundary, or artifact boundary.
+- **Typical range: 1-8 tasks per feature** depending on feature complexity.
 
 4. Be explicit about done-ness
 
