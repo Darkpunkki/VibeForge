@@ -209,13 +209,14 @@ Also capture:
 
 Write:
 
-1. `tasks.md` to:
+1. `tasks.md` with IDENTICAL content to BOTH locations:
 
-- `docs/forge/ideas/<IDEA_ID>/runs/<RUN_ID>/tasks.md`
+- `docs/forge/ideas/<IDEA_ID>/runs/<RUN_ID>/tasks.md` (immutable archive)
+- `docs/forge/ideas/<IDEA_ID>/latest/tasks.md` (overwrite with full content)
 
-Then also update:
+**IMPORTANT:** Both files must contain the COMPLETE tasks.md with full YAML header + all tasks + full Markdown rendering. Do NOT write a summary or partial content to latest/.
 
-- `docs/forge/ideas/<IDEA_ID>/latest/tasks.md` (overwrite allowed)
+Use vf.write with mode='overwrite' for both writes.
 
 2. Append an entry to:
 
