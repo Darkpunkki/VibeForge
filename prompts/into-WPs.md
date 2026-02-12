@@ -1,13 +1,13 @@
 ---
 name: make-wps
-description: Queue next Work Package(s) from an idea’s backlog (tasks → work_packages.md), without modifying tasks.md
-argument-hint: "<IDEA_ID> [N|MVP|V1|Full|Later|EPIC-###|FEAT-###|WP-####] ...  (examples: IDEA-0003_my-idea 2 | IDEA-0003_my-idea MVP | IDEA-0003_my-idea EPIC-003)"
+description: Queue Work Package(s) from an idea's backlog (tasks → work_packages.md), intelligently grouping by files/relevance
+argument-hint: "<IDEA_ID> [ALL|N|MVP|EPIC-###|--tasks TASK-001,TASK-005] ...  (examples: IDEA-0003_my-idea ALL | IDEA-0003_my-idea MVP | IDEA-0003_my-idea --tasks TASK-067,TASK-068)"
 disable-model-invocation: true
 ---
 
-# VibeForge — Queue Next Work Packages from Backlog (Tasks → WPs)
+# VibeForge — Queue Work Packages from Backlog (Tasks → WPs)
 
-Generate and enqueue the next Work Package(s) in the per-idea board:
+Generate and enqueue Work Package(s) in the per-idea board:
 
 - `docs/forge/ideas/<IDEA_ID>/latest/work_packages.md`
 
@@ -16,6 +16,10 @@ From the canonical backlog:
 - `docs/forge/ideas/<IDEA_ID>/latest/tasks.md`
 
 This command ONLY selects tasks and appends WP entries; it must never modify the backlog tasks.
+
+**Intended usage:**
+- **Process ALL tasks** and create WPs intelligently grouping by file paths and relevance
+- **Custom WP creation** from specific task IDs you select
 
 ---
 
@@ -27,10 +31,19 @@ Call with an idea folder id first:
 
 Examples:
 
-- `/into-wps IDEA-0003_my-idea` → enqueue 1 WP (default)
+**Process all eligible tasks:**
+- `/into-wps IDEA-0003_my-idea ALL` → process all eligible tasks, create as many WPs as needed (RECOMMENDED)
+- `/into-wps IDEA-0003_my-idea MVP` → process all MVP tasks only
+- `/into-wps IDEA-0003_my-idea EPIC-003` → process all tasks under EPIC-003
+
+**Create specific number of WPs:**
+- `/into-wps IDEA-0003_my-idea` → enqueue 1 WP (default if no ALL flag)
 - `/into-wps IDEA-0003_my-idea 3` → enqueue up to 3 new WPs
-- `/into-wps IDEA-0003_my-idea MVP` → only queue tasks with `release_target: MVP`
-- `/into-wps IDEA-0003_my-idea EPIC-003` → only queue tasks under an epic
+
+**Custom task selection:**
+- `/into-wps IDEA-0003_my-idea --tasks TASK-067,TASK-068,TASK-043` → create ONE WP from these specific tasks
+
+**Other filters:**
 - `/into-wps IDEA-0003_my-idea FEAT-014` → only queue tasks under a feature
 - `/into-wps IDEA-0003_my-idea WP-0007` → force-create next WP id starting at WP-0007 (rare)
 
@@ -38,9 +51,11 @@ Argument parsing rules (best-effort):
 
 - `$1` = IDEA_REF (required)
 - Remaining tokens in `$ARGUMENTS` may include:
-  - a count `N` (integer)
+  - `ALL` - process all eligible tasks (create as many WPs as needed)
+  - a count `N` (integer) - create up to N WPs
   - a release filter `MVP|V1|Full|Later`
   - `EPIC-###` and/or `FEAT-###` filters
+  - `--tasks TASK-001,TASK-005,...` - custom task selection (creates ONE WP)
   - a forced starting id `WP-####`
 
 If IDEA_REF is missing, STOP and ask the user to provide it.
@@ -114,10 +129,15 @@ If the file does not exist, treat as empty and create it with a minimal header:
 - Next WP id = (max existing WP number + 1), unless a forced starting id is provided
 - Task IDs already referenced by any existing WP (any status) to avoid duplicates
 
-3) If there are already 4+ WPs with status `Queued`, STOP and report:
+3) Queue-full check:
 
-- “Queue is already full; execute or plan queued WPs first.”
-- List the currently queued WP ids.
+**If `ALL` mode is NOT active:**
+- If there are already 4+ WPs with status `Queued`, STOP and report:
+  - "Queue is already full; execute or plan queued WPs first."
+  - List the currently queued WP ids.
+
+**If `ALL` mode IS active:**
+- Skip the queue-full check (user explicitly wants to process all tasks)
 
 ---
 
@@ -209,9 +229,25 @@ Batching heuristics (priority order):
 
 8) If uncertain, create smaller WPs.
 
-When a count `N` is provided:
+**Batching modes:**
 
-- Repeat batching up to N times, removing selected tasks from the candidate pool each time.
+**A) Custom task selection mode (`--tasks TASK-001,TASK-005,...`):**
+- Parse the comma-separated task IDs
+- Create ONE WP containing exactly those tasks
+- Number the WP appropriately (next available WP-####)
+- Skip the heuristic grouping logic
+- If any specified task is already in a WP or doesn't exist, STOP and report the issue
+
+**B) ALL mode (`ALL` keyword in arguments):**
+- Process ALL eligible candidate tasks
+- Repeat the batching heuristics until all eligible tasks are assigned to WPs
+- Remove assigned tasks from the pool after each WP is formed
+- Continue until no eligible tasks remain
+- This creates as many WPs as needed to cover all tasks
+
+**C) Count mode (integer `N` in arguments, or default to 1):**
+- Repeat batching up to N times, removing selected tasks from the candidate pool each time
+- Stop after N WPs are created OR when no eligible tasks remain (whichever comes first)
 
 ---
 
